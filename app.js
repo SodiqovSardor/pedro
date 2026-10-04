@@ -80,7 +80,7 @@ const AVTOMOBIL_MODELLARI = [
   'Hyundai Ioniq 5','Kia EV6','BMW iX','BYD Atto 3',
 ].sort();
 
-const PLATE_API_KEY = "YOUR_PLATE_RECOGNIZER_KEY";
+const PLATE_API_KEY = "e923aacf0bb9350fdb969b3831c560ae868a83bf";
 
 function formatPlate(raw) {
   const s = raw.replace(/[^A-Z0-9]/g, '').toUpperCase();
