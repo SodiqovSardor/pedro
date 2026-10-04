@@ -256,30 +256,61 @@ function dataUrlniBlobga(dataUrl) {
   return new Blob([arr], { type: mime });
 }
 
+function rasmlarniKichiklashtirish(dataUrl, maxTomon) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const scale = Math.min(1, maxTomon / Math.max(w, h));
+      if (scale >= 1 && (dataUrl.length / 1024) < 900) { resolve(dataUrl); return; }
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(w * scale);
+      canvas.height = Math.round(h * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.9));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
 function raqamniAniqlash(dataUrl) {
   const out = document.getElementById('ocr-result');
   out.textContent = 'Raqam aniqlanmoqda...';
 
-  const form = new FormData();
-  form.append('upload', dataUrlniBlobga(dataUrl), 'photo.jpg');
+  rasmlarniKichiklashtirish(dataUrl, 1600)
+    .then(kichik => {
+      const form = new FormData();
+      form.append('upload', dataUrlniBlobga(kichik), 'photo.jpg');
 
-  fetch(PLATE_API_URL, {
-    method: 'POST',
-    headers: { 'Authorization': 'Token ' + PLATE_API_KEY },
-    body: form
-  })
-    .then(r => r.json())
+      return fetch(PLATE_API_URL, {
+        method: 'POST',
+        headers: { 'Authorization': 'Token ' + PLATE_API_KEY },
+        body: form
+      });
+    })
+    .then(async r => {
+      const text = await r.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) { data = null; }
+      if (!r.ok) {
+        const msg = (data && (data.error || data.detail || data.message)) || text.slice(0, 200) || r.status;
+        throw new Error(r.status + ' — ' + msg);
+      }
+      return data;
+    })
     .then(data => {
       const first = data && data.results && data.results[0];
       aniqlanganRaqam = first && first.plate ? formatPlate(first.plate) : '';
       aniqlanganEgasi = (data && data.owner) || '';
       out.textContent = aniqlanganRaqam
         ? 'Aniqlangan raqam: ' + aniqlanganRaqam
-        : 'Raqam aniqlanmadi. Rasmni yaxshiroq sifatda oling.';
+        : 'Raqam aniqlanmadi. API javobi: ' + JSON.stringify(data);
     })
     .catch(err => {
       aniqlanganRaqam = '';
       out.textContent = 'Xatolik: ' + err.message;
+      console.error('Plate API:', err);
     });
 }
 
