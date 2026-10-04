@@ -306,6 +306,16 @@ input:focus, select:focus {
   display: block;
 }
 
+.pay-label {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.pay-label.paid { color: var(--accent); }
+
 .pay-chip {
   display: inline-flex;
   align-items: center;

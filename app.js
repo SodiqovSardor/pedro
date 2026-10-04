@@ -461,6 +461,7 @@ function hisobYaratish() {
           <span class="tag">${x.nom}</span><br>
           <span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
+          <span class="pay-label ${a.pulOlingan ? 'paid' : ''}">${a.pulOlingan ? '💰 Pul olingan' : '💰 Pul olinmadi'}</span>
         </span>
         <span>${narxFormat(x.narx)}</span>
       </div>
