@@ -23,20 +23,25 @@
 <!-- Avtomobil qo'shish -->
 <div class="card no-print">
   <h2>Avtomobil qo'shish</h2>
-  <label>Egasi</label>
-  <input type="text" id="owner" placeholder="Mijoz ismi..." autocomplete="off" />
-  <label>Davlat raqami</label>
-  <input type="text" id="plate" placeholder="01 A 123 AA yoki 01 123 AAA" inputmode="text" autocomplete="off" />
-  <p class="plate-hint">Format avtomatik aniqlanadi</p>
+
   <label>Avtomobil modeli</label>
   <input type="text" id="model" placeholder="Chevrolet Cobalt..." list="car-models-list" autocomplete="off" />
   <datalist id="car-models-list"></datalist>
-  <label>Avtomobil rasmi</label>
-  <video id="cam-preview" autoplay playsinline style="width:100%;max-height:220px;border-radius:8px;border:1px solid var(--border);background:#000;display:block;"></video>
-  <button type="button" class="btn btn-outline" onclick="startCamera()" style="margin-top:8px;">Kamerani yoqish</button>
-  <button type="button" class="btn btn-primary" onclick="takePhoto()" style="margin-top:8px;">Rasmni olish</button>
+
+  <label>Rasm tanlang yoki kameradan oling</label>
+  <input type="file" id="upload-img" accept="image/*" />
+
+  <video id="cam-preview" autoplay playsinline muted
+    style="width:100%;max-height:240px;border-radius:10px;border:1px solid var(--border);background:#000;display:none;margin-top:12px;"></video>
+  <button type="button" class="btn btn-outline" onclick="startCamera()" style="margin-top:12px;">Kamerani yoqish</button>
+  <button type="button" class="btn btn-primary" onclick="takePhoto()" style="margin-top:8px;">Rasmni olish va aniqlash</button>
   <canvas id="cam-canvas" style="display:none;"></canvas>
-  <img id="photo-preview" style="width:100%;max-height:120px;border-radius:8px;border:1px solid var(--border);margin-top:8px;display:none;object-fit:cover;" />
+
+  <img id="photo-preview" alt="Tanlangan rasm"
+    style="width:100%;border-radius:10px;border:1px solid var(--border);margin-top:12px;display:none;" />
+
+  <p id="ocr-result" class="plate-hint" style="margin-top:10px;"></p>
+
   <label>Xizmat</label>
   <select id="service-select"></select>
   <button class="btn btn-primary" onclick="avtomobilQoshish()">Avtomobil qo'shish</button>

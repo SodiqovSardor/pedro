@@ -336,7 +336,7 @@ input:focus, select:focus {
   .price-row input[type="number"] { flex: 1; }
   .receipt-row { flex-direction: column; gap: 6px; }
   .receipt-row span:last-child { align-self: flex-end; }
-  .receipt-row img { max-width: 140px; }
+  .receipt-row img { max-width: 200px; }
 }
 
 @media (max-width: 360px) {
@@ -349,5 +349,5 @@ input:focus, select:focus {
   #receipt { display: block !important; max-width: 100% !important; }
   .card { box-shadow: none; border: 1px solid #ddd; }
   .date-time-header { display: none !important; }
-  .receipt-row img { max-width: 140px !important; }
+  .receipt-row img { max-width: none !important; width: 100% !important; }
 }

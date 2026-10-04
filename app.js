@@ -80,10 +80,11 @@ const AVTOMOBIL_MODELLARI = [
   'Hyundai Ioniq 5','Kia EV6','BMW iX','BYD Atto 3',
 ].sort();
 
-const PLATE_API_KEY = "e923aacf0bb9350fdb969b3831c560ae868a83bf";
+const PLATE_API_URL = 'https://api.platerecognizer.com/v1/plate-reader/';
+const PLATE_API_KEY = 'e923aacf0bb969b3831c560ae868a83bf';
 
 function formatPlate(raw) {
-  const s = raw.replace(/[^A-Z0-9]/g, '').toUpperCase();
+  const s = (raw || '').replace(/[^A-Z0-9]/g, '').toUpperCase();
   if (!s) return '';
 
   const digits2 = s.slice(0, 2);
@@ -100,13 +101,301 @@ function formatPlate(raw) {
     if (nums)    out += ' ' + nums;
     if (letter2) out += ' ' + letter2;
     return out;
-  } else {
-    let out = digits2;
-    const nums    = rest.slice(0, 3);
-    const letters = rest.slice(3, 6);
-    if (nums)    out += ' ' + nums;
-    if (letters) out += ' ' + letters;
-    return out;
+  }
+  let out = digits2;
+  const nums    = rest.slice(0, 3);
+  const letters = rest.slice(3, 6);
+  if (nums)    out += ' ' + nums;
+  if (letters) out += ' ' + letters;
+  return out;
+}
+
+const dl = document.getElementById('car-models-list');
+AVTOMOBIL_MODELLARI.forEach(m => {
+  const opt = document.createElement('option');
+  opt.value = m;
+  dl.appendChild(opt);
+});
+
+const VALYUTA = "so'm";
+
+function narxFormat(n) {
+  return Number(n).toLocaleString('uz-UZ') + ' ' + VALYUTA;
+}
+
+function vaqtniFormatlash(vaqt) {
+  if (!vaqt) return '';
+  const d = new Date(vaqt);
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yy = String(d.getFullYear()).slice(-2);
+  return '\u200E' + dd + '/' + mm + '/' + yy + ' da qo\u0027shilgan';
+}
+
+let xizmatlar = JSON.parse(localStorage.getItem('cw_xizmatlar') || 'null') || [
+  { nom: 'Oddiy Yuvish', narx: 15000 },
+  { nom: "To'liq Yuvish", narx: 30000 },
+  { nom: 'Premium Tozalash', narx: 60000 },
+];
+
+let avtomobillar = JSON.parse(localStorage.getItem('cw_avtomobillar') || '[]');
+
+function saqlash() {
+  localStorage.setItem('cw_xizmatlar', JSON.stringify(xizmatlar));
+  localStorage.setItem('cw_avtomobillar', JSON.stringify(avtomobillar));
+}
+
+function xizmatlarKorsatish() {
+  const list = document.getElementById('price-list');
+  list.innerHTML = '';
+  xizmatlar.forEach((x, i) => {
+    const row = document.createElement('div');
+    row.className = 'price-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Xizmat nomi" value="${x.nom}"
+        oninput="xizmatlar[${i}].nom = this.value; saqlash(); selectYangilash()" />
+      <input type="number" placeholder="Narx" value="${x.narx}" min="0"
+        inputmode="numeric"
+        oninput="xizmatlar[${i}].narx = parseFloat(this.value)||0; saqlash(); selectYangilash()" />
+      <button class="remove-btn" onclick="xizmatOchirish(${i})">✕</button>
+    `;
+    list.appendChild(row);
+  });
+  selectYangilash();
+}
+
+function xizmatQoshish() {
+  xizmatlar.push({ nom: '', narx: 0 });
+  saqlash();
+  xizmatlarKorsatish();
+}
+
+function xizmatOchirish(i) {
+  xizmatlar.splice(i, 1);
+  saqlash();
+  xizmatlarKorsatish();
+  avtomobillarKorsatish();
+}
+
+function selectYangilash() {
+  const sel = document.getElementById('service-select');
+  const oldingi = sel.value;
+  sel.innerHTML = xizmatlar.map((x, i) =>
+    `<option value="${i}">${x.nom} — ${narxFormat(x.narx)}</option>`
+  ).join('');
+  if (oldingi) sel.value = oldingi;
+}
+
+/* ---------- Rasm va raqamni aniqlash ---------- */
+
+let stream = null;
+let tanlanganRasm = '';
+let aniqlanganRaqam = '';
+let aniqlanganEgasi = '';
+
+function startCamera() {
+  const video = document.getElementById('cam-preview');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Kamera brauzerda qo'llab-quvvatlanmaydi. HTTPS yoki localhost dan foydalaning.");
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(s => {
+      stream = s;
+      video.srcObject = s;
+      video.style.display = 'block';
+    })
+    .catch(err => {
+      alert('Kamera ochilmadi: ' + err.message);
+    });
+}
+
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
+  const video = document.getElementById('cam-preview');
+  if (video) {
+    video.srcObject = null;
+    video.style.display = 'none';
   }
 }
 
+function takePhoto() {
+  const video = document.getElementById('cam-preview');
+  if (!stream || !video.videoWidth) {
+    alert('Avval kamerani yoqing.');
+    return;
+  }
+  const canvas = document.getElementById('cam-canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  stopCamera();
+  rasmniKorsatish(dataUrl);
+  raqamniAniqlash(dataUrl);
+}
+
+function rasmniKorsatish(dataUrl) {
+  tanlanganRasm = dataUrl;
+  const img = document.getElementById('photo-preview');
+  img.src = dataUrl;
+  img.style.display = 'block';
+}
+
+function dataUrlniBlobga(dataUrl) {
+  const parts = dataUrl.split(',');
+  const body = parts[1] || '';
+  const head = parts[0] || '';
+  const mime = (head.match(/:(.*?);/) || [null, 'image/jpeg'])[1];
+  const bin = atob(body);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
+function raqamniAniqlash(dataUrl) {
+  const out = document.getElementById('ocr-result');
+  out.textContent = 'Raqam aniqlanmoqda...';
+
+  const form = new FormData();
+  form.append('upload', dataUrlniBlobga(dataUrl), 'photo.jpg');
+
+  fetch(PLATE_API_URL, {
+    method: 'POST',
+    headers: { 'Authorization': 'Token ' + PLATE_API_KEY },
+    body: form
+  })
+    .then(r => r.json())
+    .then(data => {
+      const first = data && data.results && data.results[0];
+      aniqlanganRaqam = first && first.plate ? formatPlate(first.plate) : '';
+      aniqlanganEgasi = (data && data.owner) || '';
+      out.textContent = aniqlanganRaqam
+        ? 'Aniqlangan raqam: ' + aniqlanganRaqam
+        : 'Raqam aniqlanmadi. Rasmni yaxshiroq sifatda oling.';
+    })
+    .catch(err => {
+      aniqlanganRaqam = '';
+      out.textContent = 'Xatolik: ' + err.message;
+    });
+}
+
+document.getElementById('upload-img').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    rasmniKorsatish(evt.target.result);
+    raqamniAniqlash(evt.target.result);
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ---------- Avtomobillar ---------- */
+
+function avtomobilQoshish() {
+  const model = document.getElementById('model').value.trim();
+  const xi = parseInt(document.getElementById('service-select').value);
+
+  if (!model) { alert('Iltimos, avtomobil modelini kiriting.'); return; }
+  if (isNaN(xi)) { alert("Iltimos, kamida bitta xizmat qo'shing."); return; }
+
+  avtomobillar.push({
+    egasi: aniqlanganEgasi || '',
+    raqam: aniqlanganRaqam || 'Aniqlanmagan',
+    model,
+    xizmatIndex: xi,
+    vaqt: new Date().toISOString(),
+    img: tanlanganRasm || ''
+  });
+  saqlash();
+  avtomobillarKorsatish();
+
+  document.getElementById('model').value = '';
+  document.getElementById('upload-img').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('ocr-result').textContent = '';
+  tanlanganRasm = '';
+  aniqlanganRaqam = '';
+  aniqlanganEgasi = '';
+}
+
+function avtomobilOchirish(i) {
+  avtomobillar.splice(i, 1);
+  saqlash();
+  avtomobillarKorsatish();
+}
+
+function avtomobillarKorsatish() {
+  const el = document.getElementById('car-list');
+  if (!avtomobillar.length) {
+    el.innerHTML = "<p class='empty-state'>Hali avtomobil qo'shilmagan.</p>";
+    return;
+  }
+  el.innerHTML = avtomobillar.map((a, i) => {
+    const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
+    return `
+      <div class="car-item">
+        <div class="car-info">
+          <div class="plate">${a.raqam}</div>
+          <div class="details">${a.egasi ? a.egasi + ' &middot; ' : ''}${a.model} &nbsp;<span class="tag">${x.nom}</span> &nbsp;<span style="font-size:0.7rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></div>
+          ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
+        </div>
+        <div class="car-right">
+          <span class="car-price">${narxFormat(x.narx)}</span>
+          <button class="car-remove" onclick="avtomobilOchirish(${i})">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ---------- Hisob ---------- */
+
+function hisobYaratish() {
+  if (!avtomobillar.length) { alert("Hali avtomobil qo'shilmagan."); return; }
+
+  const rows = document.getElementById('receipt-rows');
+  const jami = avtomobillar.reduce((sum, a) => {
+    const x = xizmatlar[a.xizmatIndex] || { narx: 0 };
+    return sum + x.narx;
+  }, 0);
+
+  rows.innerHTML = avtomobillar.map(a => {
+    const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
+    return `
+      <div class="receipt-row">
+        <span>
+          <strong>${a.raqam}</strong>${a.egasi ? ' (' + a.egasi + ')' : ''} — ${a.model}
+          <span class="tag">${x.nom}</span><br>
+          <span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span>
+          ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
+        </span>
+        <span>${narxFormat(x.narx)}</span>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('receipt-total').textContent = narxFormat(jami);
+  const hozir = new Date();
+  const receiptDate = hozir.toLocaleDateString('uz-UZ', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  const receiptTime = hozir.toLocaleTimeString('uz-UZ', {
+    hour: '2-digit', minute: '2-digit'
+  });
+  document.getElementById('receipt-date').textContent = receiptDate + ' — ' + receiptTime + ' da';
+
+  document.getElementById('receipt').style.display = 'block';
+  document.getElementById('receipt').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hisobYopish() {
+  document.getElementById('receipt').style.display = 'none';
+}
+
+xizmatlarKorsatish();
+avtomobillarKorsatish();
