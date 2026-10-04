@@ -84,7 +84,7 @@ const PLATE_API_URL = 'https://api.platerecognizer.com/v1/plate-reader/';
 const PLATE_API_KEY = 'd13a7635b6b61d049ab99b073bd24e34818a2353';
 
 function formatPlate(raw) {
-  const s = (raw || '').replace(/[^A-Z0-9]/g, '').toUpperCase();
+  const s = (raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   if (!s) return '';
 
   const digits2 = s.slice(0, 2);
