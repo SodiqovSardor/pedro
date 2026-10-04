@@ -278,9 +278,10 @@ function hisobYaratish() {
 
   rows.innerHTML = avtomobillar.map(a => {
     const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
+    const imgHtml = a.img ? `<br><img src="${a.img}" style="max-width:120px;max-height:70px;border:1px solid var(--border);border-radius:6px;margin-top:6px;object-fit:cover;" />` : '';
     return `
       <div class="receipt-row">
-          <span><strong>${a.raqam}</strong>${a.egasi ? ' (' + a.egasi + ')' : ''} — ${a.model} <span class="tag">${x.nom}</span><br><span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></span>
+          <span><strong>${a.raqam}</strong>${a.egasi ? ' (' + a.egasi + ')' : ''} — ${a.model} <span class="tag">${x.nom}</span>${imgHtml}<br><span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></span>
         <span>${narxFormat(x.narx)}</span>
       </div>
     `;
