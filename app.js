@@ -162,15 +162,20 @@ foizInput.addEventListener('input', function () {
 
 function foizniYangilash() {
   const jami = jamiHisoblash();
-  const qism = Math.round(jami * foiz) / 100;
-  const foizMatni = foizniKorsatish() + '%';
   const el = document.getElementById('receipt-foiz');
-  if (el) {
-    el.textContent = foiz > 0
-      ? foizMatni + ' = ' + narxFormat(qism)
-      : '';
-    el.style.display = foiz > 0 ? 'flex' : 'none';
+  if (!el) return;
+
+  if (foiz <= 0) {
+    el.style.display = 'none';
+    return;
   }
+
+  const qoldiqFoiz = Math.round((100 - foiz) * 100) / 100;
+  document.getElementById('foiz-label').textContent = foizniKorsatish() + '%';
+  document.getElementById('foiz-sum').textContent = narxFormat(Math.round(jami * foiz) / 100);
+  document.getElementById('qoldiq-label').textContent = qoldiqFoiz + '%';
+  document.getElementById('qoldiq-sum').textContent = narxFormat(Math.round(jami * qoldiqFoiz) / 100);
+  el.style.display = 'flex';
 }
 
 function xizmatlarKorsatish() {

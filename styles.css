@@ -308,13 +308,34 @@ input:focus, select:focus {
 
 .receipt-foiz {
   display: none;
-  justify-content: space-between;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--accent);
+  gap: 10px;
   padding-top: 10px;
   margin-top: 8px;
   border-top: 1px solid var(--border);
+}
+
+.foiz-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--accent-light);
+}
+
+.foiz-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--accent);
+}
+
+.foiz-sum {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
 }
 
 .receipt-total {
