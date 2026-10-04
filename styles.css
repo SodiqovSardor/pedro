@@ -304,5 +304,5 @@ input:focus, select:focus { border-color: var(--accent); }
   #receipt { display: block !important; }
   .card { box-shadow: none; border: none; }
   .date-time-header { display: none !important; }
-  .receipt-row img { max-width: 100px !important; max-height: 60px !important; }
+
 }

@@ -255,7 +255,7 @@ function avtomobillarKorsatish() {
       <div class="car-item">
         <div class="car-info">
           <div class="plate">${a.raqam}</div>
-          ${a.img ? `<img src="${a.img}" style="max-width:100px;max-height:60px;border-radius:6px;margin-top:4px;border:1px solid var(--border);object-fit:cover;display:block;" />` : ''}
+          ${a.img ? `<img src="${a.img}" style="max-width:100%;height:auto;border-radius:6px;margin-top:4px;border:1px solid var(--border);display:block;" />` : ''}
           <div class="details">${a.egasi ? a.egasi + ' &middot; ' : ''}${a.model} &nbsp;<span class="tag">${x.nom}</span> &nbsp;<span style="font-size:0.7rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></div>
         </div>
         <div class="car-right">
@@ -278,7 +278,7 @@ function hisobYaratish() {
 
   rows.innerHTML = avtomobillar.map(a => {
     const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
-    const imgHtml = a.img ? `<br><img src="${a.img}" style="max-width:120px;max-height:70px;border:1px solid var(--border);border-radius:6px;margin-top:6px;object-fit:cover;" />` : '';
+    const imgHtml = a.img ? `<br><img src="${a.img}" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:6px;margin-top:6px;display:block;" />` : '';
     return `
       <div class="receipt-row">
           <span><strong>${a.raqam}</strong>${a.egasi ? ' (' + a.egasi + ')' : ''} — ${a.model} <span class="tag">${x.nom}</span>${imgHtml}<br><span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></span>
