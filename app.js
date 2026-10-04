@@ -81,7 +81,7 @@ const AVTOMOBIL_MODELLARI = [
 ].sort();
 
 const PLATE_API_URL = 'https://api.platerecognizer.com/v1/plate-reader/';
-const PLATE_API_KEY = 'e923aacf0bb969b3831c560ae868a83bf';
+const PLATE_API_KEY = 'd13a7635b6b61d049ab99b073bd24e34818a2353';
 
 function formatPlate(raw) {
   const s = (raw || '').replace(/[^A-Z0-9]/g, '').toUpperCase();
