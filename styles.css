@@ -1,127 +1,141 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #f5f5f0;
+  --bg: #fdfcfb;
   --surface: #ffffff;
-  --border: #e0e0d8;
-  --accent: #2d6a4f;
-  --accent-light: #e8f4f0;
-  --text: #1a1a1a;
-  --muted: #6b7280;
-  --danger: #dc2626;
-  --radius: 12px;
+  --surface-2: #f8f7f4;
+  --border: #ecebe8;
+  --accent: #1b3a2f;
+  --accent-light: #e8f1ee;
+  --text: #181818;
+  --muted: #8a8a85;
+  --danger: #c43e3e;
+  --radius: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding: 20px 12px 40px;
+  padding: 28px 16px 60px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .date-time-header {
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--muted);
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 h1 {
   text-align: center;
-  font-size: clamp(1.3rem, 5vw, 1.7rem);
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
   font-weight: 700;
-  letter-spacing: -0.5px;
-  margin-bottom: 4px;
+  letter-spacing: -1px;
+  margin-bottom: 6px;
+  line-height: 1.15;
+  color: var(--text);
 }
 
 .subtitle {
   text-align: center;
   color: var(--muted);
-  font-size: 0.85rem;
-  margin-bottom: 24px;
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+  font-weight: 400;
 }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 24px;
   max-width: 520px;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s ease;
 }
 
 .card h2 {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   color: var(--muted);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+  font-weight: 600;
 }
 
 label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--muted);
-  margin-bottom: 4px;
-  margin-top: 12px;
+  margin-bottom: 6px;
+  margin-top: 14px;
+  font-weight: 500;
 }
 
 label:first-of-type { margin-top: 0; }
 
 input, select {
   width: 100%;
-  padding: 11px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
   font-size: 1rem;
-  background: var(--bg);
+  background: var(--surface-2);
   color: var(--text);
   outline: none;
-  transition: border 0.15s;
+  transition: border-color 0.2s, background 0.2s;
   -webkit-appearance: none;
   appearance: none;
 }
 
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
+input:focus, select:focus {
+  border-color: var(--accent);
+  background: var(--surface);
 }
 
-input:focus, select:focus { border-color: var(--accent); }
-
 #plate {
-  font-family: monospace;
-  font-size: 1.1rem;
-  letter-spacing: 2px;
-  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 1.15rem;
+  letter-spacing: 2.5px;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
 .plate-hint {
   font-size: 0.72rem;
   color: var(--muted);
-  margin-top: 4px;
+  margin-top: 6px;
+  margin-bottom: 4px;
 }
 
 .btn {
   width: 100%;
-  padding: 13px;
+  padding: 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
-  margin-top: 14px;
+  transition: opacity 0.15s, transform 0.08s ease, background 0.15s;
+  margin-top: 16px;
   touch-action: manipulation;
+  letter-spacing: 0.2px;
 }
 
-.btn:active { opacity: 0.8; transform: scale(0.98); }
-.btn-primary { background: var(--accent); color: white; }
+.btn:active { opacity: 0.85; transform: scale(0.985); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(27,58,47,0.15);
+}
 .btn-outline {
   background: transparent;
   color: var(--accent);
@@ -131,8 +145,8 @@ input:focus, select:focus { border-color: var(--accent); }
 .price-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .price-row input[type="text"] { flex: 2; min-width: 0; }
@@ -143,36 +157,39 @@ input:focus, select:focus { border-color: var(--accent); }
   border: none;
   color: var(--danger);
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   flex-shrink: 0;
+  transition: background 0.15s;
   touch-action: manipulation;
 }
 
-.price-row .remove-btn:hover { background: #fee2e2; }
+.price-row .remove-btn:hover { background: #fbf0f0; }
 
 .add-service-btn {
   background: var(--accent-light);
   color: var(--accent);
   border: 1.5px dashed var(--accent);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 10px;
+  padding: 12px;
   width: 100%;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 600;
-  margin-top: 4px;
+  margin-top: 6px;
+  transition: background 0.15s;
   touch-action: manipulation;
 }
+.add-service-btn:hover { background: #dcece8; }
 
 .car-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
+  align-items: flex-start;
+  padding: 16px 0;
   border-bottom: 1px solid var(--border);
-  gap: 8px;
+  gap: 12px;
 }
 
 .car-item:last-child { border-bottom: none; }
@@ -181,21 +198,32 @@ input:focus, select:focus { border-color: var(--accent); }
 
 .car-info .plate {
   font-weight: 700;
-  font-size: 0.95rem;
-  font-family: monospace;
+  font-size: 1.05rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
   letter-spacing: 1.5px;
+  line-height: 1.3;
+}
+
+.car-info img {
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 .car-info .details {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--muted);
-  margin-top: 3px;
+  margin-top: 6px;
+  line-height: 1.35;
 }
 
 .car-right {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
@@ -203,7 +231,8 @@ input:focus, select:focus { border-color: var(--accent); }
   font-weight: 700;
   color: var(--accent);
   white-space: nowrap;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  letter-spacing: 0.2px;
 }
 
 .car-remove {
@@ -211,29 +240,32 @@ input:focus, select:focus { border-color: var(--accent); }
   border: none;
   color: var(--muted);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
   touch-action: manipulation;
 }
 
-.car-remove:hover { color: var(--danger); background: #fee2e2; }
+.car-remove:hover { color: var(--danger); background: #fbf0f0; }
 
 .empty-state {
   text-align: center;
   color: var(--muted);
   font-size: 0.85rem;
-  padding: 24px 0;
+  padding: 28px 0;
 }
 
 .tag {
   display: inline-block;
   background: var(--accent-light);
   color: var(--accent);
-  font-size: 0.68rem;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 6px;
   font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 #receipt {
@@ -245,64 +277,77 @@ input:focus, select:focus { border-color: var(--accent); }
 .receipt-header {
   text-align: center;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
   margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
 }
 
-.receipt-header h3 { font-size: 1.1rem; }
-.receipt-header p { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
+.receipt-header h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.3px; }
+.receipt-header p { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
 
 .receipt-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  font-size: 0.88rem;
-  padding: 6px 0;
-  gap: 8px;
+  font-size: 0.9rem;
+  padding: 10px 0;
+  gap: 12px;
+  border-bottom: 0.5px solid var(--border);
+  line-height: 1.35;
 }
 
-.receipt-row span:last-child { flex-shrink: 0; }
+.receipt-row span:last-child { flex-shrink: 0; font-weight: 600; color: var(--text); }
+
+.receipt-row img {
+  max-width: 160px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-top: 6px;
+  display: block;
+}
 
 .receipt-total {
   display: flex;
   justify-content: space-between;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  padding-top: 12px;
-  margin-top: 8px;
+  padding-top: 14px;
+  margin-top: 10px;
   border-top: 2px solid var(--text);
+  letter-spacing: -0.3px;
 }
 
 .btn-row {
-  margin-top: 20px;
+  margin-top: 24px;
   display: flex;
   gap: 10px;
 }
 
-.btn-row .btn { margin-top: 0; }
+.btn-row .btn { margin-top: 0; flex: 1; }
 
 @media (max-width: 480px) {
-  .card { padding: 12px; }
+  .card { padding: 18px; }
+  body { padding: 20px 10px 40px; }
   .car-info .details { word-break: break-word; }
   .car-right { gap: 2px; }
   .car-price { font-size: 0.82rem; }
-  .car-remove { padding: 4px 6px; }
-  .price-row { flex-wrap: wrap; gap: 6px; }
+  .price-row { flex-wrap: wrap; gap: 8px; }
   .price-row input[type="text"] { flex: 1 1 100%; }
   .price-row input[type="number"] { flex: 1; }
-  .receipt-row { flex-direction: column; gap: 2px; }
+  .receipt-row { flex-direction: column; gap: 6px; }
   .receipt-row span:last-child { align-self: flex-end; }
+  .receipt-row img { max-width: 140px; }
 }
 
-@media (max-width: 400px) {
-  .price-row input[type="number"] { max-width: 80px; }
+@media (max-width: 360px) {
+  h1 { font-size: 1.4rem; }
 }
 
 @media print {
   body { background: white; padding: 0; }
   .no-print { display: none !important; }
-  #receipt { display: block !important; }
-  .card { box-shadow: none; border: none; }
+  #receipt { display: block !important; max-width: 100% !important; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
   .date-time-header { display: none !important; }
-
+  .receipt-row img { max-width: 140px !important; }
 }
