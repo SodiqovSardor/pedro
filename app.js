@@ -306,14 +306,18 @@ function raqamniAniqlash(dataUrl) {
       const natija = engYaxshiNatijaniTanla(data);
       aniqlanganRaqam = natija ? formatPlate(natija.plate) : '';
       aniqlanganEgasi = (data && data.owner) || '';
+
+      const xom = data && data.results
+        ? data.results.map(r => r.plate + '(' + Math.round((r.score || 0) * 100) + '%)').join(', ')
+        : '';
+
       if (aniqlanganRaqam) {
-        const toliq = natija.plate.replace(/[^A-Z0-9]/g, '').length >= 7;
-        out.textContent = toliq
-          ? 'Aniqlangan raqam: ' + aniqlanganRaqam
-          : "Qisman o'qilgan: " + aniqlanganRaqam + " (to'liq raqam uchun kameraga yaqinroq turib oling)";
+        out.textContent = 'Aniqlangan raqam: ' + aniqlanganRaqam;
       } else {
-        out.textContent = 'Raqam aniqlanmadi. API javobi: ' + JSON.stringify(data);
+        out.textContent = 'Raqam topilmadi.';
       }
+      out.textContent += xom ? '  |  API: ' + xom : '';
+      console.log('Plate API javobi:', data);
     })
     .catch(err => {
       aniqlanganRaqam = '';
