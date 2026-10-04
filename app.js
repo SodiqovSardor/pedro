@@ -134,28 +134,19 @@ let xizmatlar = JSON.parse(localStorage.getItem('cw_xizmatlar') || 'null') || [
 
 let avtomobillar = JSON.parse(localStorage.getItem('cw_avtomobillar') || '[]');
 let foiz = parseFloat(localStorage.getItem('cw_foiz')) || 0;
-let pulOlingan = localStorage.getItem('cw_pul_olingan') === '1';
-
 function saqlash() {
   localStorage.setItem('cw_xizmatlar', JSON.stringify(xizmatlar));
   localStorage.setItem('cw_avtomobillar', JSON.stringify(avtomobillar));
   localStorage.setItem('cw_foiz', String(foiz));
-  localStorage.setItem('cw_pul_olingan', pulOlingan ? '1' : '0');
 }
 
-function pulHolatiniKorsatish() {
-  const icon = document.getElementById('pay-icon');
-  const status = document.getElementById('pay-status');
-  if (!icon || !status) return;
-  icon.classList.toggle('paid', pulOlingan);
-  status.textContent = pulOlingan ? 'Pul olingan' : 'Pul olinmadi';
-  status.classList.toggle('paid', pulOlingan);
-}
-
-function pulHolatiniAlmashtir() {
-  pulOlingan = !pulOlingan;
+function pulHolatiniAlmashtir(i) {
+  const a = avtomobillar[i];
+  if (!a) return;
+  a.pulOlingan = !a.pulOlingan;
   saqlash();
-  pulHolatiniKorsatish();
+  avtomobillarKorsatish();
+  if (document.getElementById('receipt').style.display === 'block') hisobYaratish();
 }
 
 function jamiHisoblash() {
@@ -445,6 +436,7 @@ function avtomobillarKorsatish() {
         </div>
         <div class="car-right">
           <span class="car-price">${narxFormat(x.narx)}</span>
+          <button type="button" class="pay-chip small ${a.pulOlingan ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">💰</button>
           <button class="car-remove" onclick="avtomobilOchirish(${i})">✕</button>
         </div>
       </div>
@@ -460,8 +452,9 @@ function hisobYaratish() {
   const rows = document.getElementById('receipt-rows');
   const jami = jamiHisoblash();
 
-  rows.innerHTML = avtomobillar.map(a => {
+  rows.innerHTML = avtomobillar.map((a, i) => {
     const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
+    const tolandi = !!a.pulOlingan;
     return `
       <div class="receipt-row">
         <span>
@@ -469,6 +462,9 @@ function hisobYaratish() {
           <span class="tag">${x.nom}</span><br>
           <span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
+          <button type="button" class="pay-chip ${tolandi ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">
+            💰 ${tolandi ? "Pul olingan" : "Pul olinmadi"}
+          </button>
         </span>
         <span>${narxFormat(x.narx)}</span>
       </div>
@@ -485,7 +481,6 @@ function hisobYaratish() {
     hour: '2-digit', minute: '2-digit'
   });
   document.getElementById('receipt-date').textContent = receiptDate + ' — ' + receiptTime + ' da';
-  pulHolatiniKorsatish();
 
   document.getElementById('receipt').style.display = 'block';
   document.getElementById('receipt').scrollIntoView({ behavior: 'smooth' });
@@ -497,4 +492,3 @@ function hisobYopish() {
 
 xizmatlarKorsatish();
 avtomobillarKorsatish();
-pulHolatiniKorsatish();
