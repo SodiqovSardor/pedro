@@ -306,6 +306,17 @@ input:focus, select:focus {
   display: block;
 }
 
+.receipt-foiz {
+  display: none;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
 .receipt-total {
   display: flex;
   justify-content: space-between;

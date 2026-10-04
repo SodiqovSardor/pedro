@@ -133,10 +133,44 @@ let xizmatlar = JSON.parse(localStorage.getItem('cw_xizmatlar') || 'null') || [
 ];
 
 let avtomobillar = JSON.parse(localStorage.getItem('cw_avtomobillar') || '[]');
+let foiz = parseFloat(localStorage.getItem('cw_foiz')) || 0;
 
 function saqlash() {
   localStorage.setItem('cw_xizmatlar', JSON.stringify(xizmatlar));
   localStorage.setItem('cw_avtomobillar', JSON.stringify(avtomobillar));
+  localStorage.setItem('cw_foiz', String(foiz));
+}
+
+function jamiHisoblash() {
+  return avtomobillar.reduce((sum, a) => {
+    const x = xizmatlar[a.xizmatIndex] || { narx: 0 };
+    return sum + x.narx;
+  }, 0);
+}
+
+function foizniKorsatish() {
+  return Number.isInteger(foiz) ? String(foiz) : String(Math.round(foiz * 100) / 100);
+}
+
+const foizInput = document.getElementById('foiz-input');
+foizInput.value = foiz || '';
+foizInput.addEventListener('input', function () {
+  foiz = Math.min(100, Math.max(0, parseFloat(this.value) || 0));
+  saqlash();
+  foizniYangilash();
+});
+
+function foizniYangilash() {
+  const jami = jamiHisoblash();
+  const qism = Math.round(jami * foiz) / 100;
+  const foizMatni = foizniKorsatish() + '%';
+  const el = document.getElementById('receipt-foiz');
+  if (el) {
+    el.textContent = foiz > 0
+      ? foizMatni + ' = ' + narxFormat(qism)
+      : '';
+    el.style.display = foiz > 0 ? 'flex' : 'none';
+  }
 }
 
 function xizmatlarKorsatish() {
@@ -402,10 +436,7 @@ function hisobYaratish() {
   if (!avtomobillar.length) { alert("Hali avtomobil qo'shilmagan."); return; }
 
   const rows = document.getElementById('receipt-rows');
-  const jami = avtomobillar.reduce((sum, a) => {
-    const x = xizmatlar[a.xizmatIndex] || { narx: 0 };
-    return sum + x.narx;
-  }, 0);
+  const jami = jamiHisoblash();
 
   rows.innerHTML = avtomobillar.map(a => {
     const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
@@ -423,6 +454,7 @@ function hisobYaratish() {
   }).join('');
 
   document.getElementById('receipt-total').textContent = narxFormat(jami);
+  foizniYangilash();
   const hozir = new Date();
   const receiptDate = hozir.toLocaleDateString('uz-UZ', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
