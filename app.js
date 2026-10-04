@@ -433,10 +433,10 @@ function avtomobillarKorsatish() {
           <div class="plate">${a.raqam}</div>
           <div class="details">${a.egasi ? a.egasi + ' &middot; ' : ''}${a.model} &nbsp;<span class="tag">${x.nom}</span> &nbsp;<span style="font-size:0.7rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></div>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
+          <button type="button" class="pay-chip small ${a.pulOlingan ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">💰 ${a.pulOlingan ? 'Pul olingan' : 'Pul olinmadi'}</button>
         </div>
         <div class="car-right">
           <span class="car-price">${narxFormat(x.narx)}</span>
-          <button type="button" class="pay-chip small ${a.pulOlingan ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">💰</button>
           <button class="car-remove" onclick="avtomobilOchirish(${i})">✕</button>
         </div>
       </div>
