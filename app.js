@@ -89,25 +89,19 @@ function formatPlate(raw) {
 
   const digits2 = s.slice(0, 2);
   const rest = s.slice(2);
-
   if (!rest) return digits2;
 
-  if (/[A-Z]/.test(rest[0])) {
-    let out = digits2;
-    const letter1 = rest.slice(0, 1);
-    const nums    = rest.slice(1, 4);
-    const letter2 = rest.slice(4, 6);
-    if (letter1) out += ' ' + letter1;
-    if (nums)    out += ' ' + nums;
-    if (letter2) out += ' ' + letter2;
-    return out;
-  }
-  let out = digits2;
-  const nums    = rest.slice(0, 3);
-  const letters = rest.slice(3, 6);
-  if (nums)    out += ' ' + nums;
-  if (letters) out += ' ' + letters;
-  return out;
+  // Belgilarni tiplar bo'yicha ajratamiz va hech narsani tashlamaymiz.
+  const tokenlar = rest.match(/[A-Z]+|\d+/g) || [];
+  if (!tokenlar.length) return [digits2, rest].join(' ');
+
+  const qismlar = [];
+  let i = 0;
+  if (/^[A-Z]/.test(tokenlar[0])) { qismlar.push(tokenlar[0]); i = 1; }
+  if (tokenlar[i]) { qismlar.push(tokenlar[i]); i++; }
+  while (i < tokenlar.length) { qismlar.push(tokenlar[i]); i++; }
+
+  return [digits2].concat(qismlar).join(' ');
 }
 
 const dl = document.getElementById('car-models-list');
@@ -256,6 +250,15 @@ function dataUrlniBlobga(dataUrl) {
   return new Blob([arr], { type: mime });
 }
 
+function engYaxshiNatijaniTanla(data) {
+  const results = data && Array.isArray(data.results) ? data.results : [];
+  const toliq = results.filter(r => r && r.plate && r.plate.replace(/[^A-Z0-9]/gi, '').length >= 7);
+  const saralgan = (toliq.length ? toliq : results.filter(r => r && r.plate))
+    .slice()
+    .sort((a, b) => (b.score || 0) - (a.score || 0));
+  return saralgan[0] || null;
+}
+
 function rasmlarniKichiklashtirish(dataUrl, maxTomon) {
   return new Promise(resolve => {
     const img = new Image();
@@ -300,12 +303,17 @@ function raqamniAniqlash(dataUrl) {
       return data;
     })
     .then(data => {
-      const first = data && data.results && data.results[0];
-      aniqlanganRaqam = first && first.plate ? formatPlate(first.plate) : '';
+      const natija = engYaxshiNatijaniTanla(data);
+      aniqlanganRaqam = natija ? formatPlate(natija.plate) : '';
       aniqlanganEgasi = (data && data.owner) || '';
-      out.textContent = aniqlanganRaqam
-        ? 'Aniqlangan raqam: ' + aniqlanganRaqam
-        : 'Raqam aniqlanmadi. API javobi: ' + JSON.stringify(data);
+      if (aniqlanganRaqam) {
+        const toliq = natija.plate.replace(/[^A-Z0-9]/g, '').length >= 7;
+        out.textContent = toliq
+          ? 'Aniqlangan raqam: ' + aniqlanganRaqam
+          : "Qisman o'qilgan: " + aniqlanganRaqam + " (to'liq raqam uchun kameraga yaqinroq turib oling)";
+      } else {
+        out.textContent = 'Raqam aniqlanmadi. API javobi: ' + JSON.stringify(data);
+      }
     })
     .catch(err => {
       aniqlanganRaqam = '';
