@@ -134,11 +134,28 @@ let xizmatlar = JSON.parse(localStorage.getItem('cw_xizmatlar') || 'null') || [
 
 let avtomobillar = JSON.parse(localStorage.getItem('cw_avtomobillar') || '[]');
 let foiz = parseFloat(localStorage.getItem('cw_foiz')) || 0;
+let pulOlingan = localStorage.getItem('cw_pul_olingan') === '1';
 
 function saqlash() {
   localStorage.setItem('cw_xizmatlar', JSON.stringify(xizmatlar));
   localStorage.setItem('cw_avtomobillar', JSON.stringify(avtomobillar));
   localStorage.setItem('cw_foiz', String(foiz));
+  localStorage.setItem('cw_pul_olingan', pulOlingan ? '1' : '0');
+}
+
+function pulHolatiniKorsatish() {
+  const icon = document.getElementById('pay-icon');
+  const status = document.getElementById('pay-status');
+  if (!icon || !status) return;
+  icon.classList.toggle('paid', pulOlingan);
+  status.textContent = pulOlingan ? 'Pul olingan' : 'Pul olinmadi';
+  status.classList.toggle('paid', pulOlingan);
+}
+
+function pulHolatiniAlmashtir() {
+  pulOlingan = !pulOlingan;
+  saqlash();
+  pulHolatiniKorsatish();
 }
 
 function jamiHisoblash() {
@@ -468,6 +485,7 @@ function hisobYaratish() {
     hour: '2-digit', minute: '2-digit'
   });
   document.getElementById('receipt-date').textContent = receiptDate + ' — ' + receiptTime + ' da';
+  pulHolatiniKorsatish();
 
   document.getElementById('receipt').style.display = 'block';
   document.getElementById('receipt').scrollIntoView({ behavior: 'smooth' });
@@ -479,3 +497,4 @@ function hisobYopish() {
 
 xizmatlarKorsatish();
 avtomobillarKorsatish();
+pulHolatiniKorsatish();

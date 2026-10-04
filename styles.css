@@ -306,6 +306,44 @@ input:focus, select:focus {
   display: block;
 }
 
+.pay-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pay-icon {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 8px 10px;
+  cursor: pointer;
+  filter: grayscale(1);
+  opacity: 0.55;
+  transition: filter 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s;
+  touch-action: manipulation;
+}
+
+.pay-icon:hover { opacity: 0.85; }
+.pay-icon.paid {
+  filter: none;
+  opacity: 1;
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.pay-status {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.pay-status.paid { color: var(--accent); }
+
 .receipt-foiz {
   display: none;
   gap: 10px;
@@ -381,5 +419,7 @@ input:focus, select:focus {
   #receipt { display: block !important; max-width: 100% !important; }
   .card { box-shadow: none; border: 1px solid #ddd; }
   .date-time-header { display: none !important; }
+  .pay-icon { display: none !important; }
+  .pay-status { font-size: 0.85rem; }
   .receipt-row img { max-width: none !important; width: 100% !important; }
 }
