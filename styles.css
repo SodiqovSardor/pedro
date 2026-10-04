@@ -1,0 +1,307 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f5f5f0;
+  --surface: #ffffff;
+  --border: #e0e0d8;
+  --accent: #2d6a4f;
+  --accent-light: #e8f4f0;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --danger: #dc2626;
+  --radius: 12px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px 12px 40px;
+}
+
+.date-time-header {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+h1 {
+  text-align: center;
+  font-size: clamp(1.3rem, 5vw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  max-width: 520px;
+  margin: 0 auto 16px;
+}
+
+.card h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+
+label:first-of-type { margin-top: 0; }
+
+input, select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+input:focus, select:focus { border-color: var(--accent); }
+
+#plate {
+  font-family: monospace;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.plate-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  margin-top: 14px;
+  touch-action: manipulation;
+}
+
+.btn:active { opacity: 0.8; transform: scale(0.98); }
+.btn-primary { background: var(--accent); color: white; }
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.price-row input[type="text"] { flex: 2; min-width: 0; }
+.price-row input[type="number"] { flex: 1; min-width: 0; }
+
+.price-row .remove-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+
+.price-row .remove-btn:hover { background: #fee2e2; }
+
+.add-service-btn {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1.5px dashed var(--accent);
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 4px;
+  touch-action: manipulation;
+}
+
+.car-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.car-item:last-child { border-bottom: none; }
+
+.car-info { flex: 1; min-width: 0; }
+
+.car-info .plate {
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: monospace;
+  letter-spacing: 1.5px;
+}
+
+.car-info .details {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.car-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.car-price {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.car-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  touch-action: manipulation;
+}
+
+.car-remove:hover { color: var(--danger); background: #fee2e2; }
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 24px 0;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 0.68rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+#receipt {
+  display: none;
+  max-width: 520px;
+  margin: 0 auto 20px;
+}
+
+.receipt-header {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.receipt-header h3 { font-size: 1.1rem; }
+.receipt-header p { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 0.88rem;
+  padding: 6px 0;
+  gap: 8px;
+}
+
+.receipt-row span:last-child { flex-shrink: 0; }
+
+.receipt-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 2px solid var(--text);
+}
+
+.btn-row {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-row .btn { margin-top: 0; }
+
+@media (max-width: 480px) {
+  .card { padding: 12px; }
+  .car-info .details { word-break: break-word; }
+  .car-right { gap: 2px; }
+  .car-price { font-size: 0.82rem; }
+  .car-remove { padding: 4px 6px; }
+  .price-row { flex-wrap: wrap; gap: 6px; }
+  .price-row input[type="text"] { flex: 1 1 100%; }
+  .price-row input[type="number"] { flex: 1; }
+  .receipt-row { flex-direction: column; gap: 2px; }
+  .receipt-row span:last-child { align-self: flex-end; }
+}
+
+@media (max-width: 400px) {
+  .price-row input[type="number"] { max-width: 80px; }
+}
+
+@media print {
+  body { background: white; padding: 0; }
+  .no-print { display: none !important; }
+  #receipt { display: block !important; }
+  .card { box-shadow: none; border: none; }
+  .date-time-header { display: none !important; }
+}

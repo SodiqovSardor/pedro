@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avto Yuvish</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="date-time-header" id="date-time-display"></div>
+
+<h1>Avto Yuvish</h1>
+<p class="subtitle">Avtomobillarni kuzating va hisob yarating</p>
+
+<!-- Xizmatlar va Narxlar -->
+<div class="card no-print">
+  <h2>Xizmatlar va Narxlar</h2>
+  <div id="price-list"></div>
+  <button class="add-service-btn" onclick="xizmatQoshish()">+ Xizmat qo'shish</button>
+</div>
+
+<!-- Avtomobil qo'shish -->
+<div class="card no-print">
+  <h2>Avtomobil qo'shish</h2>
+  <label>Egasi</label>
+  <input type="text" id="owner" placeholder="Mijoz ismi..." autocomplete="off" />
+  <label>Davlat raqami</label>
+  <input type="text" id="plate" placeholder="01 A 123 AA yoki 01 123 AAA" inputmode="text" autocomplete="off" />
+  <p class="plate-hint">Format avtomatik aniqlanadi</p>
+  <label>Avtomobil modeli</label>
+  <input type="text" id="model" placeholder="Chevrolet Cobalt..." list="car-models-list" autocomplete="off" />
+  <datalist id="car-models-list"></datalist>
+  <label>Avtomobil rasmi</label>
+  <video id="cam-preview" autoplay playsinline style="width:100%;max-height:220px;border-radius:8px;border:1px solid var(--border);background:#000;display:block;"></video>
+  <button type="button" class="btn btn-outline" onclick="startCamera()" style="margin-top:8px;">Kamerani yoqish</button>
+  <button type="button" class="btn btn-primary" onclick="takePhoto()" style="margin-top:8px;">Rasmni olish</button>
+  <canvas id="cam-canvas" style="display:none;"></canvas>
+  <img id="photo-preview" style="width:100%;max-height:120px;border-radius:8px;border:1px solid var(--border);margin-top:8px;display:none;object-fit:cover;" />
+  <label>Xizmat</label>
+  <select id="service-select"></select>
+  <button class="btn btn-primary" onclick="avtomobilQoshish()">Avtomobil qo'shish</button>
+</div>
+
+<!-- Bugungi avtomobillar -->
+<div class="card no-print">
+  <h2>Bugungi avtomobillar</h2>
+  <div id="car-list"><p class="empty-state">Hali avtomobil qo'shilmagan.</p></div>
+  <button class="btn btn-outline no-print" style="margin-top:16px" onclick="hisobYaratish()">Hisob yaratish</button>
+</div>
+
+<!-- Hisob-faktura -->
+<div class="card" id="receipt">
+  <div class="receipt-header">
+    <h3>Avto Yuvish Hisobi</h3>
+    <p id="receipt-date"></p>
+  </div>
+  <div id="receipt-rows"></div>
+  <div class="receipt-total">
+    <span>Jami</span>
+    <span id="receipt-total"></span>
+  </div>
+  <div class="btn-row no-print">
+    <button class="btn btn-primary" onclick="window.print()">Chop etish / PDF</button>
+    <button class="btn btn-outline" onclick="hisobYopish()">Yopish</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
