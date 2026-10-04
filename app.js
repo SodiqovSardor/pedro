@@ -452,9 +452,8 @@ function hisobYaratish() {
   const rows = document.getElementById('receipt-rows');
   const jami = jamiHisoblash();
 
-  rows.innerHTML = avtomobillar.map((a, i) => {
+  rows.innerHTML = avtomobillar.map(a => {
     const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
-    const tolandi = !!a.pulOlingan;
     return `
       <div class="receipt-row">
         <span>
@@ -462,9 +461,6 @@ function hisobYaratish() {
           <span class="tag">${x.nom}</span><br>
           <span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
-          <button type="button" class="pay-chip ${tolandi ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">
-            💰 ${tolandi ? "Pul olingan" : "Pul olinmadi"}
-          </button>
         </span>
         <span>${narxFormat(x.narx)}</span>
       </div>
