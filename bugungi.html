@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Avto Yuvish</title>
-  <meta http-equiv="refresh" content="0; url=bugungi.html" />
+  <title>Bugungi avtomobillar — Avto Yuvish</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -20,15 +19,19 @@
   <nav class="nav-menu" id="nav-menu">
     <a href="xizmatlar.html">Xizmatlar va Narxlar</a>
     <a href="qoshish.html">Avtomobil qo'shish</a>
-    <a href="bugungi.html">Bugungi avtomobillar</a>
+    <a href="bugungi.html" class="active">Bugungi avtomobillar</a>
     <a href="hisob.html">Avto Yuvish Hisobi</a>
   </nav>
 </header>
 
 <main class="page">
-  <div class="card">
-    <p class="empty-state">Yo'naltirilmoqda...</p>
-  </div>
+
+<div class="card no-print">
+  <h2>Bugungi avtomobillar</h2>
+  <div id="car-list"><p class="empty-state">Hali avtomobil qo'shilmagan.</p></div>
+  <a class="btn btn-outline no-print" href="hisob.html" style="margin-top:16px;display:block;text-align:center;text-decoration:none;">Hisob yaratish</a>
+</div>
+
 </main>
 
 <script src="app.js"></script>

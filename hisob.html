@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avto Yuvish Hisobi</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="navbar no-print">
+  <div class="nav-inner">
+    <span class="nav-brand">Avto Yuvish</span>
+    <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
+      aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="nav-menu" id="nav-menu">
+    <a href="xizmatlar.html">Xizmatlar va Narxlar</a>
+    <a href="qoshish.html">Avtomobil qo'shish</a>
+    <a href="bugungi.html">Bugungi avtomobillar</a>
+    <a href="hisob.html" class="active">Avto Yuvish Hisobi</a>
+  </nav>
+</header>
+
+<main class="page">
+
+<div class="card" id="receipt">
+  <div class="receipt-header">
+    <h3>Avto Yuvish Hisobi</h3>
+    <p id="receipt-date"></p>
+  </div>
+  <div id="receipt-rows"></div>
+  <div class="receipt-total">
+    <span>Jami</span>
+    <span id="receipt-total"></span>
+  </div>
+  <div class="receipt-foiz" id="receipt-foiz">
+    <div class="foiz-cell">
+      <span class="foiz-label" id="foiz-label"></span>
+      <span class="foiz-sum" id="foiz-sum"></span>
+    </div>
+    <div class="foiz-cell">
+      <span class="foiz-label" id="qoldiq-label"></span>
+      <span class="foiz-sum" id="qoldiq-sum"></span>
+    </div>
+  </div>
+  <div class="btn-row no-print">
+    <button class="btn btn-primary" onclick="window.print()">Chop etish / PDF</button>
+    <a class="btn btn-outline" href="bugungi.html" style="text-align:center;text-decoration:none;">Yopish</a>
+  </div>
+</div>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

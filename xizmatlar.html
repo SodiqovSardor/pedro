@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Avto Yuvish</title>
-  <meta http-equiv="refresh" content="0; url=bugungi.html" />
+  <title>Xizmatlar va Narxlar — Avto Yuvish</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -18,7 +17,7 @@
     </button>
   </div>
   <nav class="nav-menu" id="nav-menu">
-    <a href="xizmatlar.html">Xizmatlar va Narxlar</a>
+    <a href="xizmatlar.html" class="active">Xizmatlar va Narxlar</a>
     <a href="qoshish.html">Avtomobil qo'shish</a>
     <a href="bugungi.html">Bugungi avtomobillar</a>
     <a href="hisob.html">Avto Yuvish Hisobi</a>
@@ -26,9 +25,16 @@
 </header>
 
 <main class="page">
-  <div class="card">
-    <p class="empty-state">Yo'naltirilmoqda...</p>
-  </div>
+
+<div class="card no-print">
+  <h2>Xizmatlar va Narxlar</h2>
+  <div id="price-list"></div>
+  <button class="add-service-btn" onclick="xizmatQoshish()">+ Xizmat qo'shish</button>
+  <label>Foiz (%)</label>
+  <input type="number" id="foiz-input" min="0" max="100" step="1" inputmode="numeric" placeholder="40" />
+  <p class="plate-hint">Jami summa ushbu foiz bo'yicha hisoblanadi</p>
+</div>
+
 </main>
 
 <script src="app.js"></script>

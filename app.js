@@ -1,16 +1,8 @@
-function updateDateTime() {
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('uz-UZ', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
-  const timeStr = now.toLocaleTimeString('uz-UZ', {
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
-  });
-  document.getElementById('date-time-display').textContent = `${dateStr} — ${timeStr}`;
-}
+/* Avto Yuvish — umumiy kod. Barcha sahifalar bitta skriptni ulaydi,
+   shuning uchun har bir sahifada faqat o'ziga xos elementlar bo'ladi.
+   Har bir topilma null bo'lishi mumkin — shuning uchun himoyalangan. */
 
-updateDateTime();
-setInterval(updateDateTime, 1000);
+const $ = id => document.getElementById(id);
 
 const AVTOMOBIL_MODELLARI = [
   'Chevrolet Spark','Chevrolet Nexia 1','Chevrolet Nexia 2','Chevrolet Nexia 3',
@@ -82,6 +74,7 @@ const AVTOMOBIL_MODELLARI = [
 
 const PLATE_API_URL = 'https://api.platerecognizer.com/v1/plate-reader/';
 const PLATE_API_KEY = 'd13a7635b6b61d049ab99b073bd24e34818a2353';
+const VALYUTA = "so'm";
 
 function formatPlate(raw) {
   const s = (raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -104,15 +97,6 @@ function formatPlate(raw) {
   return [digits2].concat(qismlar).join(' ');
 }
 
-const dl = document.getElementById('car-models-list');
-AVTOMOBIL_MODELLARI.forEach(m => {
-  const opt = document.createElement('option');
-  opt.value = m;
-  dl.appendChild(opt);
-});
-
-const VALYUTA = "so'm";
-
 function narxFormat(n) {
   return Number(n).toLocaleString('uz-UZ') + ' ' + VALYUTA;
 }
@@ -126,6 +110,8 @@ function vaqtniFormatlash(vaqt) {
   return '\u200E' + dd + '/' + mm + '/' + yy + ' da qo\u0027shilgan';
 }
 
+/* ---------- Ma'lumot (localStorage) ---------- */
+
 let xizmatlar = JSON.parse(localStorage.getItem('cw_xizmatlar') || 'null') || [
   { nom: 'Oddiy Yuvish', narx: 15000 },
   { nom: "To'liq Yuvish", narx: 30000 },
@@ -134,60 +120,83 @@ let xizmatlar = JSON.parse(localStorage.getItem('cw_xizmatlar') || 'null') || [
 
 let avtomobillar = JSON.parse(localStorage.getItem('cw_avtomobillar') || '[]');
 let foiz = parseFloat(localStorage.getItem('cw_foiz')) || 0;
+
 function saqlash() {
   localStorage.setItem('cw_xizmatlar', JSON.stringify(xizmatlar));
   localStorage.setItem('cw_avtomobillar', JSON.stringify(avtomobillar));
   localStorage.setItem('cw_foiz', String(foiz));
 }
 
-function pulHolatiniAlmashtir(i) {
-  const a = avtomobillar[i];
-  if (!a) return;
-  a.pulOlingan = !a.pulOlingan;
-  saqlash();
-  avtomobillarKorsatish();
-  if (document.getElementById('receipt').style.display === 'block') hisobYaratish();
-}
-
 function jamiHisoblash() {
-  return avtomobillar.reduce((sum, a) => {
-    const x = xizmatlar[a.xizmatIndex] || { narx: 0 };
-    return sum + x.narx;
-  }, 0);
+  return avtomobillar.reduce((sum, a) => sum + (xizmatlar[a.xizmatIndex] || { narx: 0 }).narx, 0);
 }
 
 function foizniKorsatish() {
   return Number.isInteger(foiz) ? String(foiz) : String(Math.round(foiz * 100) / 100);
 }
 
-const foizInput = document.getElementById('foiz-input');
-foizInput.value = foiz || '';
-foizInput.addEventListener('input', function () {
-  foiz = Math.min(100, Math.max(0, parseFloat(this.value) || 0));
-  saqlash();
-  foizniYangilash();
-});
-
 function foizniYangilash() {
-  const jami = jamiHisoblash();
-  const el = document.getElementById('receipt-foiz');
+  const el = $('receipt-foiz');
   if (!el) return;
+  if (foiz <= 0) { el.style.display = 'none'; return; }
 
-  if (foiz <= 0) {
-    el.style.display = 'none';
-    return;
-  }
-
+  const jami = jamiHisoblash();
   const qoldiqFoiz = Math.round((100 - foiz) * 100) / 100;
-  document.getElementById('foiz-label').textContent = foizniKorsatish() + '%';
-  document.getElementById('foiz-sum').textContent = narxFormat(Math.round(jami * foiz) / 100);
-  document.getElementById('qoldiq-label').textContent = qoldiqFoiz + '%';
-  document.getElementById('qoldiq-sum').textContent = narxFormat(Math.round(jami * qoldiqFoiz) / 100);
+  $('foiz-label').textContent = foizniKorsatish() + '%';
+  $('foiz-sum').textContent = narxFormat(Math.round(jami * foiz) / 100);
+  $('qoldiq-label').textContent = qoldiqFoiz + '%';
+  $('qoldiq-sum').textContent = narxFormat(Math.round(jami * qoldiqFoiz) / 100);
   el.style.display = 'flex';
 }
 
+/* ---------- Menyu ---------- */
+
+function menyuniAlmashtir() {
+  const oyna = $('nav-menu');
+  const burger = $('burger');
+  if (!oyna || !burger) return;
+  const ochiq = oyna.classList.toggle('open');
+  burger.classList.toggle('open', ochiq);
+  burger.setAttribute('aria-expanded', ochiq ? 'true' : 'false');
+  burger.setAttribute('aria-label', ochiq ? 'Menyuni yopish' : 'Menyuni ochish');
+}
+
+function menyuniYopish() {
+  const oyna = $('nav-menu');
+  const burger = $('burger');
+  if (!oyna || !burger) return;
+  oyna.classList.remove('open');
+  burger.classList.remove('open');
+  burger.setAttribute('aria-expanded', 'false');
+  burger.setAttribute('aria-label', 'Menyuni ochish');
+}
+
+document.addEventListener('click', e => {
+  const oyna = $('nav-menu');
+  if (!oyna || !oyna.classList.contains('open')) return;
+  if (e.target.closest('.navbar')) return;
+  menyuniYopish();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') menyuniYopish();
+});
+
+/* ---------- Xizmatlar ---------- */
+
+function selectYangilash() {
+  const sel = $('service-select');
+  if (!sel) return;
+  const oldingi = sel.value;
+  sel.innerHTML = xizmatlar.map((x, i) =>
+    `<option value="${i}">${x.nom} — ${narxFormat(x.narx)}</option>`
+  ).join('');
+  if (oldingi) sel.value = oldingi;
+}
+
 function xizmatlarKorsatish() {
-  const list = document.getElementById('price-list');
+  const list = $('price-list');
+  if (!list) return;
   list.innerHTML = '';
   xizmatlar.forEach((x, i) => {
     const row = document.createElement('div');
@@ -211,20 +220,16 @@ function xizmatQoshish() {
   xizmatlarKorsatish();
 }
 
+// Xizmat o'chirilganda mashinalardagi indekslar ham siljiydi.
 function xizmatOchirish(i) {
   xizmatlar.splice(i, 1);
+  avtomobillar.forEach(a => {
+    if (a.xizmatIndex > i) a.xizmatIndex--;
+    else if (a.xizmatIndex === i) a.xizmatIndex = 0;
+  });
   saqlash();
   xizmatlarKorsatish();
   avtomobillarKorsatish();
-}
-
-function selectYangilash() {
-  const sel = document.getElementById('service-select');
-  const oldingi = sel.value;
-  sel.innerHTML = xizmatlar.map((x, i) =>
-    `<option value="${i}">${x.nom} — ${narxFormat(x.narx)}</option>`
-  ).join('');
-  if (oldingi) sel.value = oldingi;
 }
 
 /* ---------- Rasm va raqamni aniqlash ---------- */
@@ -235,7 +240,8 @@ let aniqlanganRaqam = '';
 let aniqlanganEgasi = '';
 
 function startCamera() {
-  const video = document.getElementById('cam-preview');
+  const video = $('cam-preview');
+  if (!video) return;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     alert("Kamera brauzerda qo'llab-quvvatlanmaydi. HTTPS yoki localhost dan foydalaning.");
     return;
@@ -246,9 +252,7 @@ function startCamera() {
       video.srcObject = s;
       video.style.display = 'block';
     })
-    .catch(err => {
-      alert('Kamera ochilmadi: ' + err.message);
-    });
+    .catch(err => alert('Kamera ochilmadi: ' + err.message));
 }
 
 function stopCamera() {
@@ -256,7 +260,7 @@ function stopCamera() {
     stream.getTracks().forEach(t => t.stop());
     stream = null;
   }
-  const video = document.getElementById('cam-preview');
+  const video = $('cam-preview');
   if (video) {
     video.srcObject = null;
     video.style.display = 'none';
@@ -264,12 +268,12 @@ function stopCamera() {
 }
 
 function takePhoto() {
-  const video = document.getElementById('cam-preview');
-  if (!stream || !video.videoWidth) {
+  const video = $('cam-preview');
+  const canvas = $('cam-canvas');
+  if (!video || !canvas || !stream || !video.videoWidth) {
     alert('Avval kamerani yoqing.');
     return;
   }
-  const canvas = document.getElementById('cam-canvas');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext('2d').drawImage(video, 0, 0);
@@ -281,9 +285,11 @@ function takePhoto() {
 
 function rasmniKorsatish(dataUrl) {
   tanlanganRasm = dataUrl;
-  const img = document.getElementById('photo-preview');
-  img.src = dataUrl;
-  img.style.display = 'block';
+  const img = $('photo-preview');
+  if (img) {
+    img.src = dataUrl;
+    img.style.display = 'block';
+  }
 }
 
 function dataUrlniBlobga(dataUrl) {
@@ -325,14 +331,14 @@ function rasmlarniKichiklashtirish(dataUrl, maxTomon) {
 }
 
 function raqamniAniqlash(dataUrl) {
-  const out = document.getElementById('ocr-result');
+  const out = $('ocr-result');
+  if (!out) return;
   out.textContent = 'Raqam aniqlanmoqda...';
 
   rasmlarniKichiklashtirish(dataUrl, 1600)
     .then(kichik => {
       const form = new FormData();
       form.append('upload', dataUrlniBlobga(kichik), 'photo.jpg');
-
       return fetch(PLATE_API_URL, {
         method: 'POST',
         headers: { 'Authorization': 'Token ' + PLATE_API_KEY },
@@ -358,11 +364,9 @@ function raqamniAniqlash(dataUrl) {
         ? data.results.map(r => r.plate + '(' + Math.round((r.score || 0) * 100) + '%)').join(', ')
         : '';
 
-      if (aniqlanganRaqam) {
-        out.textContent = 'Aniqlangan raqam: ' + aniqlanganRaqam;
-      } else {
-        out.textContent = 'Raqam topilmadi.';
-      }
+      out.textContent = aniqlanganRaqam
+        ? 'Aniqlangan raqam: ' + aniqlanganRaqam
+        : 'Raqam topilmadi.';
       out.textContent += xom ? '  |  API: ' + xom : '';
       console.log('Plate API javobi:', data);
     })
@@ -373,22 +377,15 @@ function raqamniAniqlash(dataUrl) {
     });
 }
 
-document.getElementById('upload-img').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = evt => {
-    rasmniKorsatish(evt.target.result);
-    raqamniAniqlash(evt.target.result);
-  };
-  reader.readAsDataURL(file);
-});
-
 /* ---------- Avtomobillar ---------- */
 
 function avtomobilQoshish() {
-  const model = document.getElementById('model').value.trim();
-  const xi = parseInt(document.getElementById('service-select').value);
+  const modelEl = $('model');
+  const selEl = $('service-select');
+  if (!modelEl || !selEl) return;
+
+  const model = modelEl.value.trim();
+  const xi = parseInt(selEl.value);
 
   if (!model) { alert('Iltimos, avtomobil modelini kiriting.'); return; }
   if (isNaN(xi)) { alert("Iltimos, kamida bitta xizmat qo'shing."); return; }
@@ -404,10 +401,13 @@ function avtomobilQoshish() {
   saqlash();
   avtomobillarKorsatish();
 
-  document.getElementById('model').value = '';
-  document.getElementById('upload-img').value = '';
-  document.getElementById('photo-preview').style.display = 'none';
-  document.getElementById('ocr-result').textContent = '';
+  modelEl.value = '';
+  const upload = $('upload-img');
+  if (upload) upload.value = '';
+  const prev = $('photo-preview');
+  if (prev) prev.style.display = 'none';
+  const ocr = $('ocr-result');
+  if (ocr) ocr.textContent = '';
   tanlanganRasm = '';
   aniqlanganRaqam = '';
   aniqlanganEgasi = '';
@@ -420,7 +420,8 @@ function avtomobilOchirish(i) {
 }
 
 function avtomobillarKorsatish() {
-  const el = document.getElementById('car-list');
+  const el = $('car-list');
+  if (!el) return;
   if (!avtomobillar.length) {
     el.innerHTML = "<p class='empty-state'>Hali avtomobil qo'shilmagan.</p>";
     return;
@@ -444,14 +445,28 @@ function avtomobillarKorsatish() {
   }).join('');
 }
 
+function pulHolatiniAlmashtir(i) {
+  const a = avtomobillar[i];
+  if (!a) return;
+  a.pulOlingan = !a.pulOlingan;
+  saqlash();
+  avtomobillarKorsatish();
+}
+
 /* ---------- Hisob ---------- */
 
 function hisobYaratish() {
-  if (!avtomobillar.length) { alert("Hali avtomobil qo'shilmagan."); return; }
+  const rows = $('receipt-rows');
+  if (!rows) return;
 
-  const rows = document.getElementById('receipt-rows');
+  if (!avtomobillar.length) {
+    rows.innerHTML = "<p class='empty-state'>Hali avtomobil qo'shilmagan.</p>";
+    $('receipt-total').textContent = narxFormat(0);
+    foizniYangilash();
+    return;
+  }
+
   const jami = jamiHisoblash();
-
   rows.innerHTML = avtomobillar.map(a => {
     const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
     return `
@@ -468,8 +483,9 @@ function hisobYaratish() {
     `;
   }).join('');
 
-  document.getElementById('receipt-total').textContent = narxFormat(jami);
+  $('receipt-total').textContent = narxFormat(jami);
   foizniYangilash();
+
   const hozir = new Date();
   const receiptDate = hozir.toLocaleDateString('uz-UZ', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -477,15 +493,58 @@ function hisobYaratish() {
   const receiptTime = hozir.toLocaleTimeString('uz-UZ', {
     hour: '2-digit', minute: '2-digit'
   });
-  document.getElementById('receipt-date').textContent = receiptDate + ' — ' + receiptTime + ' da';
-
-  document.getElementById('receipt').style.display = 'block';
-  document.getElementById('receipt').scrollIntoView({ behavior: 'smooth' });
+  $('receipt-date').textContent = receiptDate + ' — ' + receiptTime + ' da';
 }
 
-function hisobYopish() {
-  document.getElementById('receipt').style.display = 'none';
+/* ---------- Sahifaga xos ishga tushirish ---------- */
+
+function sahifaniTayyorla() {
+  // Model ro'yxati
+  const dl = $('car-models-list');
+  if (dl) {
+    AVTOMOBIL_MODELLARI.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      dl.appendChild(opt);
+    });
+  }
+
+  // Xizmatlar ro'yxati
+  const narxList = $('price-list');
+  if (narxList) xizmatlarKorsatish();
+  selectYangilash();
+
+  // Foiz maydoni
+  const foizInput = $('foiz-input');
+  if (foizInput) {
+    foizInput.value = foiz || '';
+    foizInput.addEventListener('input', function () {
+      foiz = Math.min(100, Math.max(0, parseFloat(this.value) || 0));
+      saqlash();
+      foizniYangilash();
+    });
+  }
+
+  // Fayl tanlash
+  const upload = $('upload-img');
+  if (upload) {
+    upload.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = evt => {
+        rasmniKorsatish(evt.target.result);
+        raqamniAniqlash(evt.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Mashinalar ro'yxati
+  if ($('car-list')) avtomobillarKorsatish();
+
+  // Hisob sahifasi
+  if ($('receipt-rows')) hisobYaratish();
 }
 
-xizmatlarKorsatish();
-avtomobillarKorsatish();
+sahifaniTayyorla();
