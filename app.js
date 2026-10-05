@@ -101,6 +101,19 @@ function narxFormat(n) {
   return Number(n).toLocaleString('uz-UZ') + ' ' + VALYUTA;
 }
 
+/* Inline SVG ikonkalar — emoji ishlatilmaydi. */
+const IKONALAR = {
+  quyosh: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>',
+  oy: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+  hamyon: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1"/><path d="M3 7.5V17a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/><path d="M21 10v5h-4a2.5 2.5 0 0 1 0-5z"/></svg>',
+  bekor: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+};
+
+function ikon(nomi) {
+  return IKONALAR[nomi] || '';
+}
+
 function vaqtniFormatlash(vaqt) {
   if (!vaqt) return '';
   const d = new Date(vaqt);
@@ -155,7 +168,7 @@ function mavzuniQolish(mavzu) {
   document.documentElement.setAttribute('data-theme', mavzu);
   localStorage.setItem('cw_mavzu', mavzu);
   const btn = $('theme-toggle');
-  if (btn) btn.textContent = mavzu === 'dark' ? '☀️' : '🌙';
+  if (btn) btn.innerHTML = ikon(mavzu === 'dark' ? 'quyosh' : 'oy');
 }
 
 function mavzuniAlmashtir() {
@@ -221,7 +234,7 @@ function xizmatlarKorsatish() {
       <input type="number" placeholder="Narx" value="${x.narx}" min="0"
         inputmode="numeric"
         oninput="xizmatlar[${i}].narx = parseFloat(this.value)||0; saqlash(); selectYangilash()" />
-      <button class="remove-btn" onclick="xizmatOchirish(${i})">✕</button>
+      <button class="remove-btn" aria-label="Xizmatni o'chirish" onclick="xizmatOchirish(${i})">${ikon('bekor')}</button>
     `;
     list.appendChild(row);
   });
@@ -448,11 +461,11 @@ function avtomobillarKorsatish() {
           <div class="plate">${a.raqam}</div>
           <div class="details">${a.egasi ? a.egasi + ' &middot; ' : ''}${a.model} &nbsp;<span class="tag">${x.nom}</span> &nbsp;<span style="font-size:0.7rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></div>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
-          <button type="button" class="pay-chip small ${a.pulOlingan ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">💰 ${a.pulOlingan ? 'Pul olingan' : 'Pul olinmadi'}</button>
+          <button type="button" class="pay-chip small ${a.pulOlingan ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">${ikon('hamyon')} ${a.pulOlingan ? 'Pul olingan' : 'Pul olinmadi'}</button>
         </div>
         <div class="car-right">
           <span class="car-price">${narxFormat(x.narx)}</span>
-          <button class="car-remove" onclick="avtomobilOchirish(${i})">✕</button>
+          <button class="car-remove" aria-label="Avtomobilni o'chirish" onclick="avtomobilOchirish(${i})">${ikon('bekor')}</button>
         </div>
       </div>
     `;
@@ -490,7 +503,7 @@ function hisobYaratish() {
           <span class="tag">${x.nom}</span><br>
           <span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
-          <span class="pay-label ${a.pulOlingan ? 'paid' : ''}">${a.pulOlingan ? '💰 Pul olingan' : '💰 Pul olinmadi'}</span>
+          <span class="pay-label ${a.pulOlingan ? 'paid' : ''}">${ikon('hamyon')} ${a.pulOlingan ? 'Pul olingan' : 'Pul olinmadi'}</span>
         </span>
         <span>${narxFormat(x.narx)}</span>
       </div>
@@ -516,8 +529,12 @@ function sahifaniTayyorla() {
   // Mavzu tugmasi holatini mavzuga moslab qo'yamiz
   const themeBtn = $('theme-toggle');
   if (themeBtn) {
-    themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+    themeBtn.innerHTML = ikon(document.documentElement.getAttribute('data-theme') === 'dark' ? 'quyosh' : 'oy');
   }
+
+  // "Xizmat qo'shish" tugmasi ikonkasi
+  const iconSlot = document.querySelector('.icon-slot');
+  if (iconSlot) iconSlot.innerHTML = ikon('plus');
 
   // Model ro'yxati
   const dl = $('car-models-list');
