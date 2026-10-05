@@ -8,8 +8,11 @@
   <link rel="stylesheet" href="styles.css" />
   <script>
     (function () {
-      var t = localStorage.getItem('cw_mavzu');
-      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      var t = null;
+      try { t = localStorage.getItem('cw_mavzu'); } catch (e) {}
+      if (t !== 'dark' && t !== 'light') {
+        t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>

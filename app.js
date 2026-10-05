@@ -135,9 +135,14 @@ let avtomobillar = JSON.parse(localStorage.getItem('cw_avtomobillar') || '[]');
 let foiz = parseFloat(localStorage.getItem('cw_foiz')) || 0;
 
 function saqlash() {
-  localStorage.setItem('cw_xizmatlar', JSON.stringify(xizmatlar));
-  localStorage.setItem('cw_avtomobillar', JSON.stringify(avtomobillar));
-  localStorage.setItem('cw_foiz', String(foiz));
+  try {
+    localStorage.setItem('cw_xizmatlar', JSON.stringify(xizmatlar));
+    localStorage.setItem('cw_avtomobillar', JSON.stringify(avtomobillar));
+    localStorage.setItem('cw_foiz', String(foiz));
+  } catch (e) {
+    alert("Saqlash uchun joy yetarli emas. Rasmlar juda katta.\nAvvalgi mashinalarni o'chirib, qayta urinib ko'ring.");
+    console.error('Saqlash xatosi:', e);
+  }
 }
 
 function jamiHisoblash() {
@@ -166,7 +171,8 @@ function foizniYangilash() {
 
 function mavzuniQolish(mavzu) {
   document.documentElement.setAttribute('data-theme', mavzu);
-  localStorage.setItem('cw_mavzu', mavzu);
+  // Alohida saqlanadi: mashina rasmlari kvota to'lganda ham mavzu saqlanib qoladi.
+  try { localStorage.setItem('cw_mavzu', mavzu); } catch (e) {}
   const btn = $('theme-toggle');
   if (btn) btn.innerHTML = ikon(mavzu === 'dark' ? 'quyosh' : 'oy');
 }
@@ -417,27 +423,30 @@ function avtomobilQoshish() {
   if (!model) { alert('Iltimos, avtomobil modelini kiriting.'); return; }
   if (isNaN(xi)) { alert("Iltimos, kamida bitta xizmat qo'shing."); return; }
 
-  avtomobillar.push({
-    egasi: aniqlanganEgasi || '',
-    raqam: aniqlanganRaqam || 'Aniqlanmagan',
-    model,
-    xizmatIndex: xi,
-    vaqt: new Date().toISOString(),
-    img: tanlanganRasm || ''
-  });
-  saqlash();
-  avtomobillarKorsatish();
+  const kichik = rasmlarniKichiklashtirish(tanlanganRasm, 900);
+  kichik.then(img => {
+    avtomobillar.push({
+      egasi: aniqlanganEgasi || '',
+      raqam: aniqlanganRaqam || 'Aniqlanmagan',
+      model,
+      xizmatIndex: xi,
+      vaqt: new Date().toISOString(),
+      img: img || ''
+    });
+    saqlash();
+    avtomobillarKorsatish();
 
-  modelEl.value = '';
-  const upload = $('upload-img');
-  if (upload) upload.value = '';
-  const prev = $('photo-preview');
-  if (prev) prev.style.display = 'none';
-  const ocr = $('ocr-result');
-  if (ocr) ocr.textContent = '';
-  tanlanganRasm = '';
-  aniqlanganRaqam = '';
-  aniqlanganEgasi = '';
+    modelEl.value = '';
+    const upload = $('upload-img');
+    if (upload) upload.value = '';
+    const prev = $('photo-preview');
+    if (prev) prev.style.display = 'none';
+    const ocr = $('ocr-result');
+    if (ocr) ocr.textContent = '';
+    tanlanganRasm = '';
+    aniqlanganRaqam = '';
+    aniqlanganEgasi = '';
+  });
 }
 
 function avtomobilOchirish(i) {
