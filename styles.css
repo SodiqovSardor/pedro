@@ -146,6 +146,20 @@ body {
 
 .theme-toggle:hover { border-color: var(--accent); }
 
+/* Qorong'i mavzuda quyosh yorug' bo'lishi kerak. */
+.theme-toggle.quyosh-ikon {
+  color: #ffd66b;
+}
+
+.theme-toggle.quyosh-ikon .icon {
+  fill: #ffd66b;
+  stroke: #ffd66b;
+}
+
+.theme-toggle.quyosh-ikon:hover {
+  border-color: #ffd66b;
+}
+
 .nav-menu {
   display: none;
   flex-direction: column;
