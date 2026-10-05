@@ -554,7 +554,16 @@ input:focus, select:focus {
 }
 
 .btn-row .btn { margin-top: 0; flex: 1; }
-.btn-row a.btn { display: block; }
+
+/* Havola tugmalar ham <button> kabi matnni vertikal markazda tutishi kerak. */
+.btn-row a.btn,
+a.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  text-decoration: none;
+}
 
 @media (max-width: 480px) {
   .card { padding: 18px; }
