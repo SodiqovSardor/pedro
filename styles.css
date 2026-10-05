@@ -416,7 +416,7 @@ input:focus, select:focus {
 }
 
 #receipt {
-  display: none;
+  display: block;
   max-width: 520px;
   margin: 0 auto 20px;
 }
