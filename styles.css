@@ -10,9 +10,34 @@
   --text: #181818;
   --muted: #8a8a85;
   --danger: #c43e3e;
+  --danger-bg: #fbf0f0;
   --radius: 16px;
+  --accent-hover: #dcece8;
+  --on-accent: #ffffff;
+  --nav-bg: rgba(255, 255, 255, 0.88);
   --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --accent-shadow: 0 1px 2px rgba(27,58,47,0.15);
 }
+
+:root[data-theme="dark"] {
+  --bg: #101211;
+  --surface: #1a1d1c;
+  --surface-2: #212524;
+  --border: #2e3331;
+  --accent: #6fc9a4;
+  --accent-light: #23322c;
+  --text: #eceeed;
+  --muted: #8f9a96;
+  --danger: #ef6b6b;
+  --danger-bg: #3a2323;
+  --accent-hover: #2b3d36;
+  --on-accent: #10201a;
+  --nav-bg: rgba(26, 29, 28, 0.88);
+  --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --accent-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+:root[data-theme="dark"] .receipt-row span:last-child { color: var(--text); }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
@@ -28,7 +53,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
@@ -81,6 +106,30 @@ body {
 .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .burger.open span:nth-child(2) { opacity: 0; }
 .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  touch-action: manipulation;
+}
+
+.theme-toggle:hover { border-color: var(--accent); }
 
 .nav-menu {
   display: none;
@@ -200,8 +249,8 @@ input:focus, select:focus {
 .btn:active { opacity: 0.85; transform: scale(0.985); }
 .btn-primary {
   background: var(--accent);
-  color: #fff;
-  box-shadow: 0 1px 2px rgba(27,58,47,0.15);
+  color: var(--on-accent);
+  box-shadow: var(--accent-shadow);
 }
 .btn-outline {
   background: transparent;
@@ -232,7 +281,7 @@ input:focus, select:focus {
   touch-action: manipulation;
 }
 
-.price-row .remove-btn:hover { background: #fbf0f0; }
+.price-row .remove-btn:hover { background: var(--danger-bg); }
 
 .add-service-btn {
   background: var(--accent-light);
@@ -245,10 +294,11 @@ input:focus, select:focus {
   font-size: 0.9rem;
   font-weight: 600;
   margin-top: 6px;
+  margin-bottom: 22px;
   transition: background 0.15s;
   touch-action: manipulation;
 }
-.add-service-btn:hover { background: #dcece8; }
+.add-service-btn:hover { background: var(--accent-hover); }
 
 .car-item {
   display: flex;
@@ -315,7 +365,7 @@ input:focus, select:focus {
   touch-action: manipulation;
 }
 
-.car-remove:hover { color: var(--danger); background: #fbf0f0; }
+.car-remove:hover { color: var(--danger); background: var(--danger-bg); }
 
 .empty-state {
   text-align: center;
@@ -492,6 +542,19 @@ input:focus, select:focus {
 }
 
 @media print {
+  /* Qorong'i mavzu ekranda bo'lsa ham, qog'oz oq chiqishi kerak. */
+  :root,
+  :root[data-theme="dark"] {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #ffffff;
+    --border: #dddddd;
+    --text: #181818;
+    --muted: #6b6b6b;
+    --accent: #1b3a2f;
+    --accent-light: #f2f6f4;
+    --on-accent: #ffffff;
+  }
   body { background: white; padding: 0; }
   .no-print { display: none !important; }
   #receipt { display: block !important; max-width: 100% !important; }

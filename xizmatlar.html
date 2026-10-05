@@ -5,16 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Xizmatlar va Narxlar — Avto Yuvish</title>
   <link rel="stylesheet" href="styles.css" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('cw_mavzu');
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 <body>
 
 <header class="navbar no-print">
   <div class="nav-inner">
     <span class="nav-brand">Avto Yuvish</span>
-    <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
-      aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-actions">
+      <button type="button" class="theme-toggle" id="theme-toggle" onclick="mavzuniAlmashtir()"
+        aria-label="Mavzuni almashtirish" title="Mavzuni almashtirish">🌙</button>
+      <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
+        aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
   <nav class="nav-menu" id="nav-menu">
     <a href="xizmatlar.html" class="active">Xizmatlar va Narxlar</a>

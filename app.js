@@ -149,6 +149,20 @@ function foizniYangilash() {
   el.style.display = 'flex';
 }
 
+/* ---------- Mavzu ---------- */
+
+function mavzuniQolish(mavzu) {
+  document.documentElement.setAttribute('data-theme', mavzu);
+  localStorage.setItem('cw_mavzu', mavzu);
+  const btn = $('theme-toggle');
+  if (btn) btn.textContent = mavzu === 'dark' ? '☀️' : '🌙';
+}
+
+function mavzuniAlmashtir() {
+  const hozirgi = document.documentElement.getAttribute('data-theme');
+  mavzuniQolish(hozirgi === 'dark' ? 'light' : 'dark');
+}
+
 /* ---------- Menyu ---------- */
 
 function menyuniAlmashtir() {
@@ -499,6 +513,12 @@ function hisobYaratish() {
 /* ---------- Sahifaga xos ishga tushirish ---------- */
 
 function sahifaniTayyorla() {
+  // Mavzu tugmasi holatini mavzuga moslab qo'yamiz
+  const themeBtn = $('theme-toggle');
+  if (themeBtn) {
+    themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+  }
+
   // Model ro'yxati
   const dl = $('car-models-list');
   if (dl) {
