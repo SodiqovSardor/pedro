@@ -45,6 +45,22 @@
   </nav>
 </aside>
 
+<div class="modal-scrim no-print" id="raqam-scrim" onclick="raqamModalYopish()">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Raqamni kiriting" onclick="event.stopPropagation()">
+    <h3>Raqamni kiriting</h3>
+    <p class="plate-hint">Rasm yo'q — raqamni qo'lda yozing, o'zi to'g'rilanadi.<br>Masalan: 01 A 123 AA yoki 01 123 AAA</p>
+    <input type="text" id="raqam-input" class="modal-input" placeholder="01 A 123 AA"
+      autocomplete="off" autocapitalize="characters" maxlength="11"
+      oninput="raqamKiritishFormatlash(this)"
+      onkeydown="if(event.key==='Enter'){raqamBilanQoshish();}else if(event.key==='Escape'){raqamModalYopish();}" />
+    <p id="raqam-error" class="modal-error"></p>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="raqamModalYopish()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="raqamBilanQoshish()">Qo'shish</button>
+    </div>
+  </div>
+</div>
+
 <main class="page">
 
 <div class="card no-print">

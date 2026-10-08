@@ -629,6 +629,57 @@ button.car-price.maxsus { border-bottom: 1.5px dotted var(--accent); }
 
 #file-name:empty { display: none; }
 
+/* Raqam kiritish modali — rasm bo'lmaganda ochiladi */
+.modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(30, 25, 18, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-scrim.open { display: flex; }
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  corner-shape: squircle;
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.modal h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+
+.modal-input {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  letter-spacing: 2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.modal-error {
+  min-height: 1.4em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--danger);
+  margin-top: 6px;
+}
+
+.modal-error:empty { display: none; }
+
 .car-remove {
   background: none;
   border: none;
@@ -770,6 +821,7 @@ button.car-price.maxsus { border-bottom: 1.5px dotted var(--accent); }
 
 .method-switch {
   display: inline-flex;
+  max-width: 100%;
   border: 2px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
@@ -910,6 +962,9 @@ a.btn {
   .receipt-row { flex-direction: column; gap: 6px; }
   .receipt-row span:last-child { align-self: flex-end; }
   .receipt-row img { max-width: 200px; }
+  /* Tor ekranda switch butun qatorni egallaydi — ikkala tugma ham sig'adi */
+  .pay-row .method-switch { flex: 1 1 100%; display: flex; }
+  .method-btn { flex: 1 1 0; min-width: 0; justify-content: center; padding: 10px 8px; }
   .drawer { border-radius: 0 20px 20px 0; }
 }
 

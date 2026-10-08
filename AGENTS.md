@@ -27,6 +27,7 @@ Static multi-page web app for car-wash workers. No build system, no package mana
 - Car: `{egasi, raqam, model, xizmatIndex, vaqt, img, pulOlingan, tolovUsuli, narx}`. `tolovUsuli` = `'naqd'|'karta'` (legacy → `'naqd'` via `tolovUsuli(a)` getter). `narx` = per-car override; `null`/absent = follows service price (`mashinaNarxi(a)` is the single price source for list, filter total, receipt, commission, method subtotals).
 - Service selection on Qo'shish is big radio cards (`#service-cards`, `tanlanganXizmat`), NOT a `<select>`. `xizmatKartalariniYangilash()` re-renders them; called from service edits and init. `xizmatOchirish()` clamps `tanlanganXizmat` and remaps car indices (deleted service → index 0).
 - `avtomobilQoshish()` skips image shrink when no photo (`Promise.resolve('')`); shrink is async so the button needs no double-tap guard yet — known gap.
+- No photo → plate modal (`#raqam-scrim`): manual entry, live-formatted by `raqamKiritishFormatlash()` reusing `formatPlate()` (both UZ shapes, cap 8 alphanumerics, cursor preserved). Confirm requires `^\d{2}[A-Z0-9]{6}$`, else inline error. Photo path skips the modal. Shared writer: `mashinaYozish(model, xi, img)`.
 - Filter chips keep ORIGINAL indices (`filtrgaMos()` returns `{a, i}` pairs) so `onclick` handlers hit the right car.
 - Receipt rows show read-only `Pul olingan · Naqd` text so method prints in PDF; switches stay interactive only in the car list.
 - Incomplete test-harness note: jsdom never settles `new Image()` load/error (no canvas pkg) — photo path can't be covered headlessly.

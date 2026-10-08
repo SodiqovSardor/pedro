@@ -516,34 +516,96 @@ function avtomobilQoshish() {
   if (!model) { alert('Iltimos, avtomobil modelini kiriting.'); return; }
   if (!xizmatlar[xi]) { alert("Iltimos, kamida bitta xizmat qo'shing."); return; }
 
+  // Rasm bo'lmasa — raqamni qo'lda kiritish modali ochiladi.
+  if (!tanlanganRasm) { raqamModalOchish(); return; }
+
   const kichik = tanlanganRasm
     ? rasmlarniKichiklashtirish(tanlanganRasm, 900)
     : Promise.resolve('');
-  kichik.then(img => {
-    avtomobillar.push({
-      egasi: aniqlanganEgasi || '',
-      raqam: aniqlanganRaqam || 'Aniqlanmagan',
-      model,
-      xizmatIndex: xi,
-      vaqt: new Date().toISOString(),
-      img: img || ''
-    });
-    saqlash();
-    avtomobillarKorsatish();
+  kichik.then(img => mashinaYozish(model, xi, img || ''));
+}
 
-    modelEl.value = '';
-    const upload = $('upload-img');
-    if (upload) upload.value = '';
-    const fileName = $('file-name');
-    if (fileName) fileName.textContent = '';
-    const prev = $('photo-preview');
-    if (prev) prev.style.display = 'none';
-    const ocr = $('ocr-result');
-    if (ocr) ocr.textContent = '';
-    tanlanganRasm = '';
-    aniqlanganRaqam = '';
-    aniqlanganEgasi = '';
+function mashinaYozish(model, xi, img) {
+  avtomobillar.push({
+    egasi: aniqlanganEgasi || '',
+    raqam: aniqlanganRaqam || 'Aniqlanmagan',
+    model,
+    xizmatIndex: xi,
+    vaqt: new Date().toISOString(),
+    img: img || ''
   });
+  saqlash();
+  avtomobillarKorsatish();
+
+  const modelEl = $('model');
+  if (modelEl) modelEl.value = '';
+  const upload = $('upload-img');
+  if (upload) upload.value = '';
+  const fileName = $('file-name');
+  if (fileName) fileName.textContent = '';
+  const prev = $('photo-preview');
+  if (prev) prev.style.display = 'none';
+  const ocr = $('ocr-result');
+  if (ocr) ocr.textContent = '';
+  tanlanganRasm = '';
+  aniqlanganRaqam = '';
+  aniqlanganEgasi = '';
+}
+
+/* ---------- Raqam kiritish modali ---------- */
+
+function raqamModalOchish() {
+  const scrim = $('raqam-scrim');
+  if (!scrim) return;
+  const input = $('raqam-input');
+  if (input) input.value = '';
+  const err = $('raqam-error');
+  if (err) err.textContent = '';
+  scrim.classList.add('open');
+  document.body.classList.add('drawer-open');
+  if (input) input.focus();
+}
+
+function raqamModalYopish() {
+  const scrim = $('raqam-scrim');
+  if (scrim) scrim.classList.remove('open');
+  document.body.classList.remove('drawer-open');
+}
+
+// Yozayotganda avtomatik formatlaydi: 01A123AA → 01 A 123 AA, 01123AAA → 01 123 AAA.
+// Kursor o'rni saqlanadi, maksimal 8 belgi (ikkala UZ formati ham 8).
+function raqamKiritishFormatlash(el) {
+  if (!el) return;
+  const pos = el.selectionStart || 0;
+  const oldAlpha = (el.value.slice(0, pos).match(/[A-Za-z0-9]/g) || []).length;
+  const raw = (el.value.toUpperCase().match(/[A-Z0-9]/g) || []).join('').slice(0, 8);
+  const fmt = formatPlate(raw);
+  el.value = fmt;
+  let newPos = fmt.length;
+  if (oldAlpha === 0) { newPos = 0; }
+  else {
+    let seen = 0;
+    for (let k = 0; k < fmt.length; k++) {
+      if (/[A-Z0-9]/.test(fmt[k]) && ++seen === oldAlpha) { newPos = k + 1; break; }
+    }
+  }
+  try { el.setSelectionRange(newPos, newPos); } catch (e) {}
+}
+
+function raqamBilanQoshish() {
+  const input = $('raqam-input');
+  const err = $('raqam-error');
+  const raw = (((input && input.value) || '').toUpperCase().match(/[A-Z0-9]/g) || []).join('');
+  if (!/^\d{2}[A-Z0-9]{6}$/.test(raw)) {
+    if (err) err.textContent = "Raqam to'liq emas. Masalan: 01 A 123 AA";
+    if (input) input.focus();
+    return;
+  }
+  aniqlanganRaqam = formatPlate(raw);
+  raqamModalYopish();
+  const modelEl = $('model');
+  if (!modelEl) return;
+  mashinaYozish(modelEl.value.trim(), tanlanganXizmat, '');
 }
 
 function avtomobilOchirish(i) {
