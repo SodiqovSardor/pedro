@@ -955,16 +955,16 @@ a.btn {
   .card { padding: 20px; }
   body { padding: 12px 10px 40px; }
   .car-info .details { word-break: break-word; }
-  .car-right { gap: 4px; }
   .price-row { flex-wrap: wrap; gap: 8px; }
   .price-row input[type="text"] { flex: 1 1 100%; }
   .price-row input[type="number"] { flex: 1; }
   .receipt-row { flex-direction: column; gap: 6px; }
   .receipt-row span:last-child { align-self: flex-end; }
   .receipt-row img { max-width: 200px; }
-  /* Tor ekranda switch butun qatorni egallaydi — ikkala tugma ham sig'adi */
-  .pay-row .method-switch { flex: 1 1 100%; display: flex; }
-  .method-btn { flex: 1 1 0; min-width: 0; justify-content: center; padding: 10px 8px; }
+  /* Tor ekranda karta ustuni bo'linadi: narx pastki qatorga tushadi,
+     switch esa tabiiy o'lchamda to'liq kenglikda sig'adi */
+  .car-item { flex-direction: column; align-items: stretch; }
+  .car-right { width: 100%; justify-content: space-between; gap: 4px; }
   .drawer { border-radius: 0 20px 20px 0; }
 }
 
