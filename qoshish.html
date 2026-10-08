@@ -20,40 +20,47 @@
 
 <header class="navbar no-print">
   <div class="nav-inner">
-    <span class="nav-brand">Avto Yuvish</span>
-    <div class="nav-actions">
-      <button type="button" class="theme-toggle" id="theme-toggle" onclick="mavzuniAlmashtir()"
-        aria-label="Mavzuni almashtirish" title="Mavzuni almashtirish"></button>
-      <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
-        aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+    <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
+      aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="nav-title">Avtomobil qo'shish</span>
+    <button type="button" class="theme-toggle" id="theme-toggle" onclick="mavzuniAlmashtir()"
+      aria-label="Mavzuni almashtirish" title="Mavzuni almashtirish"></button>
   </div>
-  <nav class="nav-menu" id="nav-menu">
-    <a href="xizmatlar.html">Xizmatlar va Narxlar</a>
-    <a href="qoshish.html" class="active">Avtomobil qo'shish</a>
-    <a href="bugungi.html">Bugungi avtomobillar</a>
-    <a href="hisob.html">Avto Yuvish Hisobi</a>
-  </nav>
 </header>
+
+<div class="scrim no-print" id="drawer-scrim" onclick="menyuniYopish()"></div>
+<aside class="drawer no-print" id="nav-menu" aria-hidden="true" aria-label="Sahifalar">
+  <div class="drawer-head">
+    <span class="nav-brand">Avto Yuvish</span>
+    <button type="button" class="drawer-close" data-ikon="bekor" onclick="menyuniYopish()"
+      aria-label="Menyuni yopish"></button>
+  </div>
+  <nav class="drawer-links">
+    <a href="qoshish.html" class="active" data-ikon="plus">Avtomobil qo'shish</a>
+    <a href="bugungi.html" data-ikon="ruyxat">Bugungi avtomobillar</a>
+    <a href="hisob.html" data-ikon="chek">Avto Yuvish Hisobi</a>
+    <a href="xizmatlar.html" data-ikon="teg">Xizmatlar va Narxlar</a>
+  </nav>
+</aside>
 
 <main class="page">
 
 <div class="card no-print">
-  <h2>Avtomobil qo'shish</h2>
-
   <label>Avtomobil modeli</label>
   <input type="text" id="model" placeholder="Chevrolet Cobalt..." list="car-models-list" autocomplete="off" />
   <datalist id="car-models-list"></datalist>
 
   <label>Rasm tanlang yoki kameradan oling</label>
-  <input type="file" id="upload-img" accept="image/*" />
+  <label for="upload-img" class="btn btn-outline btn-giant file-btn" data-ikon="plus">Rasm tanlash</label>
+  <input type="file" id="upload-img" class="file-input" accept="image/*" />
+  <p id="file-name" class="plate-hint"></p>
 
   <video id="cam-preview" autoplay playsinline muted
     style="width:100%;max-height:240px;border-radius:10px;border:1px solid var(--border);background:#000;display:none;margin-top:12px;"></video>
-  <button type="button" class="btn btn-outline" onclick="startCamera()" style="margin-top:12px;">Kamerani yoqish</button>
-  <button type="button" class="btn btn-primary" onclick="takePhoto()" style="margin-top:8px;">Rasmni olish va aniqlash</button>
+  <button type="button" class="btn btn-outline btn-giant" onclick="startCamera()" style="margin-top:12px;">Kamerani yoqish</button>
+  <button type="button" class="btn btn-primary btn-giant" onclick="takePhoto()" style="margin-top:8px;">Rasmni olish va aniqlash</button>
   <canvas id="cam-canvas" style="display:none;"></canvas>
 
   <img id="photo-preview" alt="Tanlangan rasm"
@@ -61,9 +68,9 @@
 
   <p id="ocr-result" class="plate-hint" style="margin-top:10px;"></p>
 
-  <label>Xizmat</label>
-  <select id="service-select"></select>
-  <button class="btn btn-primary" onclick="avtomobilQoshish()">Avtomobil qo'shish</button>
+  <label>Xizmat — bittasini tanlang</label>
+  <div class="service-cards" id="service-cards" role="radiogroup" aria-label="Xizmat tanlash"></div>
+  <button class="btn btn-primary btn-giant sticky-cta" onclick="avtomobilQoshish()">Avtomobil qo'shish</button>
 </div>
 
 </main>

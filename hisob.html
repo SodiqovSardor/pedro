@@ -20,23 +20,30 @@
 
 <header class="navbar no-print">
   <div class="nav-inner">
-    <span class="nav-brand">Avto Yuvish</span>
-    <div class="nav-actions">
-      <button type="button" class="theme-toggle" id="theme-toggle" onclick="mavzuniAlmashtir()"
-        aria-label="Mavzuni almashtirish" title="Mavzuni almashtirish"></button>
-      <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
-        aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+    <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
+      aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="nav-title">Avto Yuvish Hisobi</span>
+    <button type="button" class="theme-toggle" id="theme-toggle" onclick="mavzuniAlmashtir()"
+      aria-label="Mavzuni almashtirish" title="Mavzuni almashtirish"></button>
   </div>
-  <nav class="nav-menu" id="nav-menu">
-    <a href="xizmatlar.html">Xizmatlar va Narxlar</a>
-    <a href="qoshish.html">Avtomobil qo'shish</a>
-    <a href="bugungi.html">Bugungi avtomobillar</a>
-    <a href="hisob.html" class="active">Avto Yuvish Hisobi</a>
-  </nav>
 </header>
+
+<div class="scrim no-print" id="drawer-scrim" onclick="menyuniYopish()"></div>
+<aside class="drawer no-print" id="nav-menu" aria-hidden="true" aria-label="Sahifalar">
+  <div class="drawer-head">
+    <span class="nav-brand">Avto Yuvish</span>
+    <button type="button" class="drawer-close" data-ikon="bekor" onclick="menyuniYopish()"
+      aria-label="Menyuni yopish"></button>
+  </div>
+  <nav class="drawer-links">
+    <a href="qoshish.html" data-ikon="plus">Avtomobil qo'shish</a>
+    <a href="bugungi.html" data-ikon="ruyxat">Bugungi avtomobillar</a>
+    <a href="hisob.html" class="active" data-ikon="chek">Avto Yuvish Hisobi</a>
+    <a href="xizmatlar.html" data-ikon="teg">Xizmatlar va Narxlar</a>
+  </nav>
+</aside>
 
 <main class="page">
 
@@ -58,6 +65,16 @@
     <div class="foiz-cell">
       <span class="foiz-label" id="qoldiq-label"></span>
       <span class="foiz-sum" id="qoldiq-sum"></span>
+    </div>
+  </div>
+  <div class="receipt-usul" id="receipt-usul">
+    <div class="foiz-cell">
+      <span class="foiz-label" id="naqd-label"></span>
+      <span class="foiz-sum" id="naqd-sum"></span>
+    </div>
+    <div class="foiz-cell">
+      <span class="foiz-label" id="karta-label"></span>
+      <span class="foiz-sum" id="karta-sum"></span>
     </div>
   </div>
   <div class="btn-row no-print">

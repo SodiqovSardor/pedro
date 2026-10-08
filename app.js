@@ -76,6 +76,38 @@ const PLATE_API_URL = 'https://api.platerecognizer.com/v1/plate-reader/';
 const PLATE_API_KEY = 'd13a7635b6b61d049ab99b073bd24e34818a2353';
 const VALYUTA = "so'm";
 
+/* To'lov usuli: naqd yoki karta. Ular o'zaro almashtiriladi (biriga ayni
+   vaqtda ikkalasi ham tegmaydi), shuning uchun alohida tugma-patent. */
+const TOLOV_USULLARI = { naqd: 'Naqd', karta: 'Karta' };
+const FILTRLAR = [
+  { id: 'barchasi', nom: 'Barchasi' },
+  { id: 'naqd', nom: 'Naqd' },
+  { id: 'karta', nom: 'Karta' },
+  { id: 'olinmagan', nom: 'Pul olinmadan' },
+];
+let tolovFiltr = 'barchasi';
+let tahrirlanayotganNarx = null;
+
+// Eski mashinalarda tolovUsuli yo'q — ular avtomatik "Naqd" bo'lib ko'rinadi.
+function tolovUsuli(a) {
+  return TOLOV_USULLARI[a.tolovUsuli] ? a.tolovUsuli : 'naqd';
+}
+
+function tolovUsulNomi(a) {
+  return TOLOV_USULLARI[tolovUsuli(a)];
+}
+
+/* Narx: avval mashinaning o'z narxi (a.narx), yo'q bo'lsa xizmat narxi.
+   null = "xizmat narxi bilan birga", demak xizmat narxi o'zgarganda ham
+   mashina narxi avtomatik o'zgaradi. */
+function xizmatNarxi(xizmatIndex) {
+  return (xizmatlar[xizmatIndex] || { narx: 0 }).narx;
+}
+
+function mashinaNarxi(a) {
+  return a.narx != null ? a.narx : xizmatNarxi(a.xizmatIndex);
+}
+
 function formatPlate(raw) {
   const s = (raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   if (!s) return '';
@@ -107,7 +139,12 @@ const IKONALAR = {
   oy: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
   hamyon: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1"/><path d="M3 7.5V17a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/><path d="M21 10v5h-4a2.5 2.5 0 0 1 0-5z"/></svg>',
   bekor: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
-  plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+  plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  naqd: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  karta: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>',
+  ruyxat: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 6h12M8.5 12h12M8.5 18h12"/><circle cx="4" cy="6" r="1.2"/><circle cx="4" cy="12" r="1.2"/><circle cx="4" cy="18" r="1.2"/></svg>',
+  chek: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M9 8h6M9 12h6M9 16h3.5"/></svg>',
+  teg: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12.5l-8 8-9-9V4h7.5z"/><circle cx="8.5" cy="8.5" r="1.4"/></svg>'
 };
 
 function ikon(nomi) {
@@ -146,7 +183,20 @@ function saqlash() {
 }
 
 function jamiHisoblash() {
-  return avtomobillar.reduce((sum, a) => sum + (xizmatlar[a.xizmatIndex] || { narx: 0 }).narx, 0);
+  return avtomobillar.reduce((sum, a) => sum + mashinaNarxi(a), 0);
+}
+
+/* Faqat to'lanmagan mashinalar hisobga olinadi — to'lanmagan usul pul
+   kassada yoki terminalda yo'q. */
+function tolovUsuliBoYicha() {
+  const natija = { naqd: { sum: 0, soni: 0 }, karta: { sum: 0, soni: 0 } };
+  avtomobillar.forEach(a => {
+    if (!a.pulOlingan) return;
+    const usul = tolovUsuli(a);
+    natija[usul].sum += mashinaNarxi(a);
+    natija[usul].soni++;
+  });
+  return natija;
 }
 
 function foizniKorsatish() {
@@ -164,6 +214,20 @@ function foizniYangilash() {
   $('foiz-sum').textContent = narxFormat(Math.round(jami * foiz) / 100);
   $('qoldiq-label').textContent = qoldiqFoiz + '%';
   $('qoldiq-sum').textContent = narxFormat(Math.round(jami * qoldiqFoiz) / 100);
+  el.style.display = 'flex';
+}
+
+/* Naqd va karta summalari — kassadagi naqd pulni tekshirish uchun. */
+function usulniYangilash() {
+  const el = $('receipt-usul');
+  if (!el) return;
+  const t = tolovUsuliBoYicha();
+  if (t.naqd.soni + t.karta.soni === 0) { el.style.display = 'none'; return; }
+
+  $('naqd-label').textContent = 'Naqd (' + t.naqd.soni + ' ta)';
+  $('naqd-sum').textContent = narxFormat(t.naqd.sum);
+  $('karta-label').textContent = 'Karta (' + t.karta.soni + ' ta)';
+  $('karta-sum').textContent = narxFormat(t.karta.sum);
   el.style.display = 'flex';
 }
 
@@ -185,32 +249,40 @@ function mavzuniAlmashtir() {
   mavzuniQolish(hozirgi === 'dark' ? 'light' : 'dark');
 }
 
-/* ---------- Menyu ---------- */
+/* ---------- Chap yon menyu (drawer) ---------- */
 
 function menyuniAlmashtir() {
   const oyna = $('nav-menu');
+  const scrim = $('drawer-scrim');
   const burger = $('burger');
   if (!oyna || !burger) return;
   const ochiq = oyna.classList.toggle('open');
+  if (scrim) scrim.classList.toggle('show', ochiq);
   burger.classList.toggle('open', ochiq);
   burger.setAttribute('aria-expanded', ochiq ? 'true' : 'false');
   burger.setAttribute('aria-label', ochiq ? 'Menyuni yopish' : 'Menyuni ochish');
+  oyna.setAttribute('aria-hidden', ochiq ? 'false' : 'true');
+  document.body.classList.toggle('drawer-open', ochiq);
 }
 
 function menyuniYopish() {
   const oyna = $('nav-menu');
+  const scrim = $('drawer-scrim');
   const burger = $('burger');
   if (!oyna || !burger) return;
   oyna.classList.remove('open');
+  if (scrim) scrim.classList.remove('show');
   burger.classList.remove('open');
   burger.setAttribute('aria-expanded', 'false');
   burger.setAttribute('aria-label', 'Menyuni ochish');
+  oyna.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('drawer-open');
 }
 
 document.addEventListener('click', e => {
   const oyna = $('nav-menu');
   if (!oyna || !oyna.classList.contains('open')) return;
-  if (e.target.closest('.navbar')) return;
+  if (e.target.closest('.drawer') || e.target.closest('#burger')) return;
   menyuniYopish();
 });
 
@@ -220,14 +292,32 @@ document.addEventListener('keydown', e => {
 
 /* ---------- Xizmatlar ---------- */
 
-function selectYangilash() {
-  const sel = $('service-select');
-  if (!sel) return;
-  const oldingi = sel.value;
-  sel.innerHTML = xizmatlar.map((x, i) =>
-    `<option value="${i}">${x.nom} — ${narxFormat(x.narx)}</option>`
-  ).join('');
-  if (oldingi) sel.value = oldingi;
+/* Qo'shish sahifasidagi katta xizmat kartalari. tanlanganXizmat — joriy
+   tanlov indeksi; xizmat o'chirilganda xavfsiz qiymatga tushadi. */
+let tanlanganXizmat = 0;
+
+function xizmatKartalariniYangilash() {
+  const box = $('service-cards');
+  if (!box) return;
+  if (tanlanganXizmat >= xizmatlar.length) tanlanganXizmat = 0;
+  if (!xizmatlar.length) {
+    box.innerHTML = "<p class='service-empty'>Avval Xizmatlar sahifasida narx qo'shing.</p>";
+    return;
+  }
+  box.innerHTML = xizmatlar.map((x, i) => {
+    const on = tanlanganXizmat === i;
+    return `<button type="button" role="radio" aria-checked="${on}"
+      class="service-card ${on ? 'on' : ''}" onclick="xizmatTanlash(${i})">
+      <span class="service-card-nom">${x.nom || 'Nomsiz xizmat'}</span>
+      <span class="service-card-narx">${narxFormat(x.narx)}</span>
+    </button>`;
+  }).join('');
+}
+
+function xizmatTanlash(i) {
+  if (!xizmatlar[i]) return;
+  tanlanganXizmat = i;
+  xizmatKartalariniYangilash();
 }
 
 function xizmatlarKorsatish() {
@@ -239,15 +329,15 @@ function xizmatlarKorsatish() {
     row.className = 'price-row';
     row.innerHTML = `
       <input type="text" placeholder="Xizmat nomi" value="${x.nom}"
-        oninput="xizmatlar[${i}].nom = this.value; saqlash(); selectYangilash()" />
+        oninput="xizmatlar[${i}].nom = this.value; saqlash(); xizmatKartalariniYangilash()" />
       <input type="number" placeholder="Narx" value="${x.narx}" min="0"
         inputmode="numeric"
-        oninput="xizmatlar[${i}].narx = parseFloat(this.value)||0; saqlash(); selectYangilash()" />
+        oninput="xizmatlar[${i}].narx = parseFloat(this.value)||0; saqlash(); xizmatKartalariniYangilash()" />
       <button class="remove-btn" aria-label="Xizmatni o'chirish" onclick="xizmatOchirish(${i})">${ikon('bekor')}</button>
     `;
     list.appendChild(row);
   });
-  selectYangilash();
+  xizmatKartalariniYangilash();
 }
 
 function xizmatQoshish() {
@@ -263,6 +353,7 @@ function xizmatOchirish(i) {
     if (a.xizmatIndex > i) a.xizmatIndex--;
     else if (a.xizmatIndex === i) a.xizmatIndex = 0;
   });
+  if (tanlanganXizmat >= xizmatlar.length) tanlanganXizmat = 0;
   saqlash();
   xizmatlarKorsatish();
   avtomobillarKorsatish();
@@ -417,16 +508,17 @@ function raqamniAniqlash(dataUrl) {
 
 function avtomobilQoshish() {
   const modelEl = $('model');
-  const selEl = $('service-select');
-  if (!modelEl || !selEl) return;
+  if (!modelEl) return;
 
   const model = modelEl.value.trim();
-  const xi = parseInt(selEl.value);
+  const xi = tanlanganXizmat;
 
   if (!model) { alert('Iltimos, avtomobil modelini kiriting.'); return; }
-  if (isNaN(xi)) { alert("Iltimos, kamida bitta xizmat qo'shing."); return; }
+  if (!xizmatlar[xi]) { alert("Iltimos, kamida bitta xizmat qo'shing."); return; }
 
-  const kichik = rasmlarniKichiklashtirish(tanlanganRasm, 900);
+  const kichik = tanlanganRasm
+    ? rasmlarniKichiklashtirish(tanlanganRasm, 900)
+    : Promise.resolve('');
   kichik.then(img => {
     avtomobillar.push({
       egasi: aniqlanganEgasi || '',
@@ -442,6 +534,8 @@ function avtomobilQoshish() {
     modelEl.value = '';
     const upload = $('upload-img');
     if (upload) upload.value = '';
+    const fileName = $('file-name');
+    if (fileName) fileName.textContent = '';
     const prev = $('photo-preview');
     if (prev) prev.style.display = 'none';
     const ocr = $('ocr-result');
@@ -461,11 +555,18 @@ function avtomobilOchirish(i) {
 function avtomobillarKorsatish() {
   const el = $('car-list');
   if (!el) return;
-  if (!avtomobillar.length) {
-    el.innerHTML = "<p class='empty-state'>Hali avtomobil qo'shilmagan.</p>";
+  filtrlarniKorsatish();
+
+  const qatorlar = filtrgaMos();
+  const jami = $('filter-total');
+
+  if (!qatorlar.length) {
+    el.innerHTML = `<p class='empty-state'>${avtomobillar.length ? "Bu filtrga mos avtomobil yo'q." : "Hali avtomobil qo'shilmagan."}</p>`;
+    if (jami) jami.textContent = '';
     return;
   }
-  el.innerHTML = avtomobillar.map((a, i) => {
+
+  el.innerHTML = qatorlar.map(({ a, i }) => {
     const x = xizmatlar[a.xizmatIndex] || { nom: "Noma'lum", narx: 0 };
     return `
       <div class="car-item">
@@ -473,21 +574,122 @@ function avtomobillarKorsatish() {
           <div class="plate">${a.raqam}</div>
           <div class="details">${a.egasi ? a.egasi + ' &middot; ' : ''}${a.model} &nbsp;<span class="tag">${x.nom}</span> &nbsp;<span style="font-size:0.7rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span></div>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
-          <button type="button" class="pay-chip small ${a.pulOlingan ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">${ikon('hamyon')} ${a.pulOlingan ? 'Pul olingan' : 'Pul olinmadi'}</button>
+          <div class="pay-row">
+            <button type="button" class="pay-chip small ${a.pulOlingan ? 'paid' : ''}" onclick="pulHolatiniAlmashtir(${i})">${ikon('hamyon')} ${a.pulOlingan ? 'Pul olingan' : 'Pul olinmadi'}</button>
+            ${a.pulOlingan ? methodSwitchHtml(i, a) : ''}
+          </div>
         </div>
         <div class="car-right">
-          <span class="car-price">${narxFormat(x.narx)}</span>
+          ${narxHujjasi(i, a)}
           <button class="car-remove" aria-label="Avtomobilni o'chirish" onclick="avtomobilOchirish(${i})">${ikon('bekor')}</button>
         </div>
       </div>
     `;
   }).join('');
+
+  if (jami) {
+    const summa = qatorlar.reduce((s, { a }) => s + mashinaNarxi(a), 0);
+    jami.textContent = qatorlar.length + ' ta avtomobil · Jami ' + narxFormat(summa);
+  }
+}
+
+/* Narxga bosilganda maydon ochiladi. Bo'sh qoldirilsa yoki bekor qilinsa
+   mashina yana xizmat narxiga qaytadi. */
+function narxHujjasi(i, a) {
+  if (tahrirlanayotganNarx === i) {
+    return `<span class="narx-edit">
+      <input type="number" id="narx-input" class="narx-input" min="0" step="100" inputmode="numeric"
+        value="${mashinaNarxi(a)}" aria-label="Narxni tahrirlash"
+        onkeydown="if(event.key==='Enter'){narxniSaqlash(${i},this.value);}else if(event.key==='Escape'){narxniBekorQilish();}"
+        onblur="narxniSaqlash(${i},this.value)" />
+      <button type="button" class="narx-cancel" aria-label="Narxni tahrirlashdan chiqish" onclick="narxniBekorQilish()">${ikon('bekor')}</button>
+    </span>`;
+  }
+
+  const maxsus = a.narx != null;
+  const sarlavha = maxsus
+    ? `O'zgartirilgan narx. Xizmat narxi: ${narxFormat(xizmatNarxi(a.xizmatIndex))}. Bosib qayta tiklang yoki bo'sh qoldiring.`
+    : "Bosib narxni o'zgartiring";
+  return `<button type="button" class="car-price ${maxsus ? 'maxsus' : ''}" onclick="narxniTahrirlash(${i})"
+    title="${sarlavha}">${narxFormat(mashinaNarxi(a))}</button>`;
+}
+
+function narxniTahrirlash(i) {
+  if (!avtomobillar[i]) return;
+  tahrirlanayotganNarx = i;
+  avtomobillarKorsatish();
+  const el = $('narx-input');
+  if (el) { el.focus(); el.select(); }
+}
+
+function narxniBekorQilish() {
+  if (tahrirlanayotganNarx === null) return;
+  tahrirlanayotganNarx = null;
+  avtomobillarKorsatish();
+}
+
+function narxniSaqlash(i, qiymat) {
+  if (tahrirlanayotganNarx !== i) return;
+  const a = avtomobillar[i];
+  if (a) {
+    const n = parseFloat(qiymat);
+    a.narx = isNaN(n) || n < 0 ? null : Math.round(n * 100) / 100;
+  }
+  tahrirlanayotganNarx = null;
+  saqlash();
+  avtomobillarKorsatish();
+}
+
+/* Stepper tugmalari (±1000): har bosishda darhol saqlanadi, tahrir rejimi
+   ochiq qoladi — qo'lqop bilan klaviaturasiz narxni to'g'rilash uchun. */
+/* Filtr qatorlari asl indeksni saqlaydi — onclick uchun kerak. */
+function filtrgaMos() {
+  return avtomobillar.map((a, i) => ({ a, i })).filter(({ a }) => {
+    if (tolovFiltr === 'barchasi') return true;
+    if (tolovFiltr === 'olinmagan') return !a.pulOlingan;
+    return a.pulOlingan && tolovUsuli(a) === tolovFiltr;
+  });
+}
+
+function filtrlarniKorsatish() {
+  const el = $('filter-chips');
+  if (!el) return;
+  el.innerHTML = FILTRLAR.map(f => {
+    const on = tolovFiltr === f.id;
+    return `<button type="button" class="filter-chip ${on ? 'on' : ''}" aria-pressed="${on}"
+      onclick="filtrniAlmashtir('${f.id}')">${f.nom}</button>`;
+  }).join('');
+}
+
+function filtrniAlmashtir(id) {
+  if (!FILTRLAR.some(f => f.id === id)) return;
+  tolovFiltr = id;
+  avtomobillarKorsatish();
 }
 
 function pulHolatiniAlmashtir(i) {
   const a = avtomobillar[i];
   if (!a) return;
   a.pulOlingan = !a.pulOlingan;
+  saqlash();
+  avtomobillarKorsatish();
+}
+
+function methodSwitchHtml(i, a) {
+  const joriy = tolovUsuli(a);
+  return `<span class="method-switch">
+    <button type="button" class="method-btn ${joriy === 'naqd' ? 'on' : ''}" aria-pressed="${joriy === 'naqd'}"
+      onclick="tolovUsuliniAlmashtir(${i},'naqd')">${ikon('naqd')} Naqd</button>
+    <button type="button" class="method-btn ${joriy === 'karta' ? 'on' : ''}" aria-pressed="${joriy === 'karta'}"
+      onclick="tolovUsuliniAlmashtir(${i},'karta')">${ikon('karta')} Karta</button>
+  </span>`;
+}
+
+function tolovUsuliniAlmashtir(i, usul) {
+  const a = avtomobillar[i];
+  if (!a || !TOLOV_USULLARI[usul]) return;
+  if (tolovUsuli(a) === usul) return;
+  a.tolovUsuli = usul;
   saqlash();
   avtomobillarKorsatish();
 }
@@ -502,6 +704,7 @@ function hisobYaratish() {
     rows.innerHTML = "<p class='empty-state'>Hali avtomobil qo'shilmagan.</p>";
     $('receipt-total').textContent = narxFormat(0);
     foizniYangilash();
+    usulniYangilash();
     return;
   }
 
@@ -515,15 +718,16 @@ function hisobYaratish() {
           <span class="tag">${x.nom}</span><br>
           <span style="font-size:0.72rem;color:var(--muted)">${vaqtniFormatlash(a.vaqt)}</span>
           ${a.img ? `<img src="${a.img}" alt="${a.raqam} rasmi" />` : ''}
-          <span class="pay-label ${a.pulOlingan ? 'paid' : ''}">${ikon('hamyon')} ${a.pulOlingan ? 'Pul olingan' : 'Pul olinmadi'}</span>
+          <span class="pay-label ${a.pulOlingan ? 'paid' : ''}">${ikon('hamyon')} ${a.pulOlingan ? 'Pul olingan · ' + tolovUsulNomi(a) : 'Pul olinmadi'}</span>
         </span>
-        <span>${narxFormat(x.narx)}</span>
+        <span>${narxFormat(mashinaNarxi(a))}</span>
       </div>
     `;
   }).join('');
 
   $('receipt-total').textContent = narxFormat(jami);
   foizniYangilash();
+  usulniYangilash();
 
   const hozir = new Date();
   const receiptDate = hozir.toLocaleDateString('uz-UZ', {
@@ -549,6 +753,11 @@ function sahifaniTayyorla() {
   const iconSlot = document.querySelector('.icon-slot');
   if (iconSlot) iconSlot.innerHTML = ikon('plus');
 
+  // Chap menyudagi havolalar ikonkalari (data-ikon atributi orqali)
+  document.querySelectorAll('[data-ikon]').forEach(el => {
+    el.insertAdjacentHTML('afterbegin', ikon(el.getAttribute('data-ikon')));
+  });
+
   // Model ro'yxati
   const dl = $('car-models-list');
   if (dl) {
@@ -562,7 +771,7 @@ function sahifaniTayyorla() {
   // Xizmatlar ro'yxati
   const narxList = $('price-list');
   if (narxList) xizmatlarKorsatish();
-  selectYangilash();
+  xizmatKartalariniYangilash();
 
   // Foiz maydoni
   const foizInput = $('foiz-input');
@@ -581,6 +790,8 @@ function sahifaniTayyorla() {
     upload.addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
+      const nameEl = $('file-name');
+      if (nameEl) nameEl.textContent = 'Tanlangan: ' + file.name;
       const reader = new FileReader();
       reader.onload = evt => {
         rasmniKorsatish(evt.target.result);

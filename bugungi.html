@@ -20,28 +20,36 @@
 
 <header class="navbar no-print">
   <div class="nav-inner">
-    <span class="nav-brand">Avto Yuvish</span>
-    <div class="nav-actions">
-      <button type="button" class="theme-toggle" id="theme-toggle" onclick="mavzuniAlmashtir()"
-        aria-label="Mavzuni almashtirish" title="Mavzuni almashtirish"></button>
-      <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
-        aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+    <button type="button" class="burger" id="burger" onclick="menyuniAlmashtir()"
+      aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav-menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="nav-title">Bugungi avtomobillar</span>
+    <button type="button" class="theme-toggle" id="theme-toggle" onclick="mavzuniAlmashtir()"
+      aria-label="Mavzuni almashtirish" title="Mavzuni almashtirish"></button>
   </div>
-  <nav class="nav-menu" id="nav-menu">
-    <a href="xizmatlar.html">Xizmatlar va Narxlar</a>
-    <a href="qoshish.html">Avtomobil qo'shish</a>
-    <a href="bugungi.html" class="active">Bugungi avtomobillar</a>
-    <a href="hisob.html">Avto Yuvish Hisobi</a>
-  </nav>
 </header>
+
+<div class="scrim no-print" id="drawer-scrim" onclick="menyuniYopish()"></div>
+<aside class="drawer no-print" id="nav-menu" aria-hidden="true" aria-label="Sahifalar">
+  <div class="drawer-head">
+    <span class="nav-brand">Avto Yuvish</span>
+    <button type="button" class="drawer-close" data-ikon="bekor" onclick="menyuniYopish()"
+      aria-label="Menyuni yopish"></button>
+  </div>
+  <nav class="drawer-links">
+    <a href="qoshish.html" data-ikon="plus">Avtomobil qo'shish</a>
+    <a href="bugungi.html" class="active" data-ikon="ruyxat">Bugungi avtomobillar</a>
+    <a href="hisob.html" data-ikon="chek">Avto Yuvish Hisobi</a>
+    <a href="xizmatlar.html" data-ikon="teg">Xizmatlar va Narxlar</a>
+  </nav>
+</aside>
 
 <main class="page">
 
 <div class="card no-print">
-  <h2>Bugungi avtomobillar</h2>
+  <div class="filter-chips" id="filter-chips"></div>
+  <p class="filter-total" id="filter-total"></p>
   <div id="car-list"><p class="empty-state">Hali avtomobil qo'shilmagan.</p></div>
   <a class="btn btn-outline no-print" href="hisob.html" style="margin-top:16px;">Hisob yaratish</a>
 </div>
