@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#282828"/>
+  <!-- droplet -->
+  <path d="M256 96 C256 96 148 252 148 336 a108 108 0 0 0 216 0 C364 252 256 96 256 96 Z" fill="#83a598"/>
+  <!-- highlight -->
+  <path d="M212 330 a52 52 0 0 0 36 62" fill="none" stroke="#ebdbb2" stroke-width="22" stroke-linecap="round"/>
+  <!-- soap bubbles -->
+  <circle cx="356" cy="150" r="26" fill="#fabd2f"/>
+  <circle cx="408" cy="216" r="16" fill="#ebdbb2"/>
+  <circle cx="322" cy="104" r="12" fill="#d3869b"/>
+</svg>
