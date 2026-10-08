@@ -9,6 +9,7 @@ Static multi-page web app for car-wash workers. No build system, no package mana
 - Print receipt: open `hisob.html` → `window.print()`; `.no-print` hidden via `@media print`.
 
 ## Architecture
+- `manifest.json` + `sw.js` + `icons/` — PWA shell (installable, offline). Bump `CACHE` in `sw.js` to ship shell updates. API calls are never cached.
 - `index.html` — redirect only (→ `qoshish.html`, the worker landing page)
 - `qoshish.html` — add car: model + photo/camera + OCR plate + big service cards + sticky CTA
 - `bugungi.html` — today's list: filter chips, paid toggle, Naqd/Karta switch, inline price edit

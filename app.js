@@ -804,6 +804,14 @@ function hisobYaratish() {
 /* ---------- Sahifaga xos ishga tushirish ---------- */
 
 function sahifaniTayyorla() {
+  // Service worker (PWA offline) — faqat https yoki localhost da.
+  if ('serviceWorker' in navigator &&
+      (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW:', err));
+    });
+  }
+
   // Mavzu tugmasi holatini mavzuga moslab qo'yamiz
   const themeBtn = $('theme-toggle');
   if (themeBtn) {
