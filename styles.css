@@ -890,13 +890,19 @@ button.car-price.maxsus { border-bottom: 1.5px dotted var(--accent); }
 }
 
 .receipt-foiz,
-.receipt-usul {
+.receipt-usul,
+.receipt-qarz {
   display: none;
   gap: 10px;
   padding-top: 10px;
   margin-top: 8px;
   border-top: 1px solid var(--border);
 }
+
+/* To'lanmagan pul — qizil ohangda, kassada yo'q summa darhol ko'rinadi. */
+.receipt-qarz .foiz-cell { background: var(--danger-bg); }
+.receipt-qarz .foiz-label { color: var(--danger); }
+
 
 .foiz-cell {
   flex: 1;

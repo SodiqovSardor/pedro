@@ -199,6 +199,29 @@ function tolovUsuliBoYicha() {
   return natija;
 }
 
+/* To'lanmagan mashinalar summasi — hisobdagi "Jami" ularni ham o'z ichiga
+   oladi, naqd/karta summalari esa yo'q. Shu sabab alohida ko'rsatiladi. */
+function tolanmaganHisob() {
+  const natija = { sum: 0, soni: 0 };
+  avtomobillar.forEach(a => {
+    if (a.pulOlingan) return;
+    natija.sum += mashinaNarxi(a);
+    natija.soni++;
+  });
+  return natija;
+}
+
+function tolanmagniYangilash() {
+  const el = $('receipt-qarz');
+  if (!el) return;
+  const t = tolanmaganHisob();
+  if (!t.soni) { el.style.display = 'none'; return; }
+
+  $('qarz-label').textContent = 'Pul olinmagan (' + t.soni + ' ta)';
+  $('qarz-sum').textContent = narxFormat(t.sum);
+  el.style.display = 'flex';
+}
+
 function foizniKorsatish() {
   return Number.isInteger(foiz) ? String(foiz) : String(Math.round(foiz * 100) / 100);
 }
@@ -767,6 +790,7 @@ function hisobYaratish() {
     $('receipt-total').textContent = narxFormat(0);
     foizniYangilash();
     usulniYangilash();
+    tolanmagniYangilash();
     return;
   }
 
@@ -790,6 +814,7 @@ function hisobYaratish() {
   $('receipt-total').textContent = narxFormat(jami);
   foizniYangilash();
   usulniYangilash();
+  tolanmagniYangilash();
 
   const hozir = new Date();
   const receiptDate = hozir.toLocaleDateString('uz-UZ', {

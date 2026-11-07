@@ -1,5 +1,5 @@
 /* Avto Yuvish — offline qobiq. Versiyani oshirish yangilanishni tarqatadi. */
-const CACHE = 'avto-yuvish-v1';
+const CACHE = 'avto-yuvish-v2';
 
 const SHELL = [
   './',
